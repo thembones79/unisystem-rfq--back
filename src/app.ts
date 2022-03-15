@@ -30,9 +30,9 @@ app.enable("trust proxy");
 app.use(
   cookieSession({
     signed: false,
-    secure: isOnProduction,
+    secure: false,
     httpOnly: false,
-    sameSite: isOnProduction ? "none" : false,
+    sameSite: false,
   })
 );
 app.use(currentUser);
