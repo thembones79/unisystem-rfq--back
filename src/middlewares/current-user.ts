@@ -22,13 +22,16 @@ export const currentUser = (
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.session?.jwt) {
+  const token = req.headers.authorization;
+
+  if (!token) {
     return next();
   }
 
   try {
-    const payload = jwt.verify(req.session.jwt, keys.JWT_SECRET) as UserPayload;
+    const payload = jwt.verify(token, keys.JWT_SECRET) as UserPayload;
     req.currentUser = payload;
+    console.log({ c1: payload });
   } catch (error) {}
 
   next();

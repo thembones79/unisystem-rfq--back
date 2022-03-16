@@ -32,7 +32,7 @@ app.use(
     signed: false,
     secure: isOnProduction,
     httpOnly: false,
-    sameSite: false,
+    sameSite: isOnProduction ? "none" : false,
   })
 );
 app.use(currentUser);
