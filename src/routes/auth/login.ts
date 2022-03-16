@@ -62,8 +62,8 @@ router.post(
     };
 
     delete existingUser.password;
-
-    res.status(200).send(existingUser);
+    console.log({ userJwt });
+    res.status(200).send({ token: userJwt });
   }
 );
 
