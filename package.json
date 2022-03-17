@@ -1,7 +1,7 @@
 {
-  "name": "unisystem-rfq--backend",
+  "name": "riverdi-rfq--backend",
   "version": "1.0.0",
-  "description": "Backend written in Node.js, Typescript for Unisystem RFQ system",
+  "description": "Backend written in Node.js, Typescript for Riverdi RFQ system",
   "main": "index.js",
   "engines": {
     "node": "14.16.1",
