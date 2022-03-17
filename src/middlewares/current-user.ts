@@ -31,7 +31,6 @@ export const currentUser = (
   try {
     const payload = jwt.verify(token, keys.JWT_SECRET) as UserPayload;
     req.currentUser = payload;
-    console.log({ c1: payload });
   } catch (error) {}
 
   next();
