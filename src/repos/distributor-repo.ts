@@ -12,7 +12,7 @@ class DistributorRepo {
         `
       );
       return result?.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -24,7 +24,7 @@ class DistributorRepo {
         [id]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -36,7 +36,7 @@ class DistributorRepo {
         [name]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -48,7 +48,7 @@ class DistributorRepo {
         [name]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -60,7 +60,7 @@ class DistributorRepo {
         [id, name]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -72,7 +72,7 @@ class DistributorRepo {
         [id]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -81,7 +81,7 @@ class DistributorRepo {
     try {
       const result = await pool.query(`SELECT COUNT(*) FROM distributors;`);
       return parseInt(result?.rows[0].count);
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }

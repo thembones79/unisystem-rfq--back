@@ -9,6 +9,7 @@ class RfqRepo {
         r.id,
         rfq_code,
         eau,
+        department,
       COALESCE(extra_note, '') AS extra_note,
         customers.name AS customer,
         distributors.name AS distributor,
@@ -23,7 +24,7 @@ class RfqRepo {
         ORDER BY updated DESC;
       `);
       return result?.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -36,6 +37,7 @@ class RfqRepo {
               r.id,
               rfq_code,
               eau,
+              department,
               clickup_id,
               customer_id,
               customers.name AS customer,
@@ -64,7 +66,7 @@ class RfqRepo {
         [id]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -76,7 +78,7 @@ class RfqRepo {
         [rfq_code]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -88,7 +90,7 @@ class RfqRepo {
         [distributor_id]
       );
       return result?.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -107,6 +109,7 @@ class RfqRepo {
     mp_expected,
     eau_max,
     extra_note,
+    department,
   }: {
     rfq_code: string;
     eau: string;
@@ -121,6 +124,7 @@ class RfqRepo {
     mp_expected: string;
     eau_max: string;
     extra_note: string;
+    department: string;
   }) {
     try {
       const result = await pool.query(
@@ -137,8 +141,9 @@ class RfqRepo {
           samples_expected,
           mp_expected,
           eau_max,
-          extra_note)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+          extra_note,
+          department)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
           RETURNING id, rfq_code;`,
         [
           rfq_code,
@@ -154,10 +159,11 @@ class RfqRepo {
           mp_expected,
           eau_max,
           extra_note,
+          department,
         ]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -175,6 +181,7 @@ class RfqRepo {
     mp_expected,
     eau_max,
     extra_note,
+    department,
   }: {
     id: string;
     eau: string;
@@ -188,6 +195,7 @@ class RfqRepo {
     mp_expected: string;
     eau_max: string;
     extra_note: string;
+    department: string;
   }) {
     try {
       const result = await pool.query(
@@ -203,6 +211,7 @@ class RfqRepo {
           mp_expected = $10,
           eau_max = $11,
           extra_note = $12,
+          department = $13,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, rfq_code;`,
@@ -219,10 +228,11 @@ class RfqRepo {
           mp_expected,
           eau_max,
           extra_note,
+          department,
         ]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -234,7 +244,7 @@ class RfqRepo {
         [id]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -243,7 +253,7 @@ class RfqRepo {
     try {
       const result = await pool.query(`SELECT COUNT(*) FROM rfqs;`);
       return parseInt(result?.rows[0].count);
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }

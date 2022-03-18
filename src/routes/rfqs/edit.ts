@@ -42,6 +42,7 @@ router.put(
     body("mp_expected").trim(),
     body("eau_max").trim(),
     body("extra_note").trim(),
+    body("department").trim(),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -57,6 +58,7 @@ router.put(
       mp_expected,
       eau_max,
       extra_note,
+      department,
     } = req.body;
     const { id } = req.params;
 
@@ -78,6 +80,7 @@ router.put(
       mp_expected,
       eau_max,
       extra_note,
+      department,
     });
 
     res.status(200).send(rfq);

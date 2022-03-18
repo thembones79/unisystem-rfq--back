@@ -47,6 +47,7 @@ router.post(
     body("mp_expected").trim(),
     body("eau_max").trim(),
     body("extra_note").trim(),
+    body("department").trim(),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -62,6 +63,7 @@ router.post(
       mp_expected,
       eau_max,
       extra_note,
+      department,
     } = req.body;
 
     const kam = await UserRepo.findById(kam_id);
@@ -106,14 +108,17 @@ router.post(
       mp_expected,
       eau_max,
       extra_note,
+      department,
     });
 
-    await spFileCreate({ kam: kam.shortname, rfq_code });
+    //  await spFileCreate({ kam: kam.shortname, rfq_code });
 
     const pathModifier =
       process.env.NODE_ENV === "production" ? "" : "testing/";
 
-    const spPath = `${keys.SP_DOMAIN}/sites/ProjectsManagementGroup/Shared%20Documents/RIVERDI%20PROJECTS/${pathModifier}${kam.shortname}_!PROSPECTS/${rfq_code}`;
+    //const spPath = `${keys.SP_DOMAIN}/sites/ProjectsManagementGroup/Shared%20Documents/RIVERDI%20PROJECTS/${pathModifier}${kam.shortname}_!PROSPECTS/${rfq_code}`;
+
+    const spPath = `Go to the app:`;
 
     const appPath = `${keys.CLIENT_ORIGIN}/rfqs/${rfq.id}`;
 

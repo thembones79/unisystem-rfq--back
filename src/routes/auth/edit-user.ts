@@ -25,6 +25,11 @@ router.put(
       .toUpperCase()
       .isLength({ min: 2, max: 8 })
       .withMessage("Shortname must be between 2 and 8 characters"),
+    body("shortname_alt")
+      .trim()
+      .toUpperCase()
+      .isLength({ min: 2, max: 8 })
+      .withMessage("Alternative Shortname must be between 2 and 8 characters"),
     body("role_id")
       .trim()
       .notEmpty()
@@ -39,7 +44,7 @@ router.put(
 
     const { id } = req.params;
 
-    const { email, username, shortname, role_id } = req.body;
+    const { email, username, shortname, shortname_alt, role_id } = req.body;
     const existingUser = await UserRepo.findById(id);
     if (!existingUser) {
       throw new BadRequestError("User does not exist");
@@ -50,6 +55,7 @@ router.put(
       email,
       username,
       shortname,
+      shortname_alt,
       role_id,
     });
 

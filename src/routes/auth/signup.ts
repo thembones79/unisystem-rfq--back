@@ -42,6 +42,11 @@ router.post(
       .toUpperCase()
       .isLength({ min: 2, max: 8 })
       .withMessage("Shortname must be between 2 and 8 characters"),
+    body("shortname_alt")
+      .trim()
+      .toUpperCase()
+      .isLength({ min: 2, max: 8 })
+      .withMessage("Alternative Shortname must be between 2 and 8 characters"),
     body("role_id")
       .trim()
       .notEmpty()
@@ -54,7 +59,8 @@ router.post(
       throw new NotAuthorizedError();
     }
 
-    const { email, password, username, shortname, role_id } = req.body;
+    const { email, password, username, shortname, shortname_alt, role_id } =
+      req.body;
     const existingUser = await UserRepo.findByEmail(email);
     if (existingUser) {
       throw new BadRequestError("Email in use", "email");
@@ -66,6 +72,7 @@ router.post(
       password: hashed,
       username,
       shortname,
+      shortname_alt,
       role_id,
     });
 
