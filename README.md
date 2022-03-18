@@ -1,4 +1,4 @@
-![Logo](static/riverdiRfqLogo.png)
+![Logo](static/unisystemrfq.png)
 
 # `Backend` in Node.js & Typescript for **Riverdi RFQ** System
 

@@ -9,6 +9,7 @@ exports.up = (pgm) => {
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     rfq_code VARCHAR(80) UNIQUE NOT NULL,
+    department VARCHAR(8) UNIQUE,
     eau INTEGER,
     customer_id INTEGER NOT NULL REFERENCES customers(id),
     distributor_id INTEGER NOT NULL REFERENCES distributors(id),

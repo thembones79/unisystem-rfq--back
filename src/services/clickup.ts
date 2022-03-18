@@ -21,8 +21,7 @@ interface IClickUpUser {
   user: ITeamMember;
 }
 
-const CLICKUP_RIVERDI_SUBCATEGORY =
-  process.env.NODE_ENV === "production" ? 55059859 : 65635652;
+const CLICKUP_UNISYSTEM_RFQ_LIST = 168766394;
 
 export class ClickUp {
   static async findUserId(email: string) {
@@ -40,7 +39,7 @@ export class ClickUp {
       )[0];
 
       return teamMember?.id || 0;
-    } catch (e) {
+    } catch (e: any) {
       console.warn(e);
       throw new BadRequestError(e.response.data.error);
     }
@@ -51,7 +50,7 @@ export class ClickUp {
 
     try {
       const response = await axios.post(
-        `https://api.clickup.com/api/v2/list/${CLICKUP_RIVERDI_SUBCATEGORY}/task`,
+        `https://api.clickup.com/api/v2/list/${CLICKUP_UNISYSTEM_RFQ_LIST}/task`,
         {
           name: rfqCode,
           assignees: [userId],
@@ -63,7 +62,7 @@ export class ClickUp {
       );
 
       return response.data.id;
-    } catch (e) {
+    } catch (e: any) {
       console.warn(e);
       throw new BadRequestError(e.response.data.error);
     }
@@ -82,7 +81,7 @@ export class ClickUp {
       );
 
       return response.data.id;
-    } catch (e) {
+    } catch (e: any) {
       console.warn(e);
       throw new BadRequestError(e.response.data.error);
     }
@@ -98,7 +97,7 @@ export class ClickUp {
       );
 
       return response.data.status.status;
-    } catch (e) {
+    } catch (e: any) {
       console.warn(e);
       throw new BadRequestError(e.response.data.error);
     }
