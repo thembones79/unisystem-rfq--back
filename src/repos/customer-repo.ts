@@ -12,7 +12,7 @@ class CustomerRepo {
         `
       );
       return result?.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -24,7 +24,7 @@ class CustomerRepo {
         [id]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -33,7 +33,7 @@ class CustomerRepo {
     try {
       const result = await pool.query(`SELECT COUNT(*) FROM customers;`);
       return parseInt(result?.rows[0].count);
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }

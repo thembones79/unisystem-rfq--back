@@ -19,7 +19,7 @@ class RequirementRepo {
         `
       );
       return result?.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -43,7 +43,7 @@ class RequirementRepo {
         [rfq_id]
       );
       return result?.rows;
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -64,7 +64,7 @@ class RequirementRepo {
         [id]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -88,7 +88,7 @@ class RequirementRepo {
         [rfq_id, c_nc_cwr, requirement, note, priority]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -114,7 +114,7 @@ class RequirementRepo {
         [id, rfq_id, c_nc_cwr, requirement, note, priority]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -126,7 +126,7 @@ class RequirementRepo {
         [id]
       );
       return result?.rows[0];
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
@@ -135,7 +135,7 @@ class RequirementRepo {
     try {
       const result = await pool.query(`SELECT COUNT(*) FROM requirements;`);
       return parseInt(result?.rows[0].count);
-    } catch (error) {
+    } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }

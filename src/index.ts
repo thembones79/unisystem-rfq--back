@@ -15,7 +15,7 @@ const start = async () => {
     });
     const res = await pool.query("SELECT $1::text as name", ["PostgreSQL"]);
     console.info(`Connected to ${res?.rows[0].name} 🎉`);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
   }
 

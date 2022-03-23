@@ -31,7 +31,7 @@ export const spFileCreate = async ({ kam, rfq_code }: IspFileCreate) => {
 
   try {
     await spsave(coreOptions, creds, fileOptions);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     throw new BadRequestError("Dir not created");
   }

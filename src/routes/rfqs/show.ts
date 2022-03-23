@@ -18,7 +18,7 @@ router.get("/rfqs/:id", requireAuth, async (req, res) => {
 
   try {
     status = await ClickUp.getTaskStatus(rfq.clickup_id);
-  } catch (error) {
+  } catch (error: any) {
     console.error({ error });
   }
 
