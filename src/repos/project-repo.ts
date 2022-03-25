@@ -18,7 +18,7 @@ class ProjectRepo {
         JOIN project_clients ON project_clients.id = p.project_client_id
         JOIN industries ON industries.id = p.industry_id
         JOIN users AS pm ON pm.id = p.pm_id
-        JOIN users AS kam ON kam.id = p.kam_id
+        JOIN users AS kam ON kam.id = project_clients.kam_id
         ORDER BY updated DESC;
       `);
       return result?.rows;
@@ -51,7 +51,7 @@ class ProjectRepo {
           JOIN industries ON industries.id = p.industry_id
           JOIN rfqs ON rfqs.id = p.rfq_id
           JOIN users AS pm ON pm.id = p.pm_id
-          JOIN users AS kam ON kam.id = p.kam_id
+          JOIN users AS kam ON kam.id = project_clients.kam_id
         WHERE r.id = $1
         `,
         [id]
@@ -104,7 +104,6 @@ class ProjectRepo {
     industry_id,
     rfq_id,
     department,
-    kam_id,
     pm_id,
     clickup_id,
     version,
@@ -116,7 +115,6 @@ class ProjectRepo {
     industry_id: string;
     rfq_id: string;
     department: string;
-    kam_id: string;
     pm_id: string;
     clickup_id: string;
     version: string;
@@ -131,13 +129,12 @@ class ProjectRepo {
           industry_id,
           rfq_id,
           department,
-          kam_id,
           pm_id,
           clickup_id,
           version,
           revision,
           note)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           RETURNING id, project_code;`,
         [
           project_code,
@@ -145,7 +142,6 @@ class ProjectRepo {
           industry_id,
           rfq_id,
           department,
-          kam_id,
           pm_id,
           clickup_id,
           version,
@@ -165,7 +161,6 @@ class ProjectRepo {
     industry_id,
     rfq_id,
     department,
-    kam_id,
     pm_id,
     clickup_id,
     version,
@@ -177,7 +172,6 @@ class ProjectRepo {
     industry_id: string;
     rfq_id: string;
     department: string;
-    kam_id: string;
     pm_id: string;
     clickup_id: string;
     version: string;
@@ -191,12 +185,11 @@ class ProjectRepo {
           industry_id = $3,
           rfq_id = $4,
           department = $5,
-          kam_id = $6,
-          pm_id = $7,
-          clickup_id = $8,
-          version = $9,
-          revision = $10,
-          note = $11,
+          pm_id = $6,
+          clickup_id = $7,
+          version = $8,
+          revision = $9,
+          note = $10,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, project_code;`,
@@ -206,7 +199,6 @@ class ProjectRepo {
           industry_id,
           rfq_id,
           department,
-          kam_id,
           pm_id,
           clickup_id,
           version,

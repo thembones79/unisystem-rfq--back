@@ -1,23 +1,17 @@
 import { BadRequestError } from "../errors";
 import { pool } from "../pool";
 
-const TEMP = `
-
-CREATE TABLE project_clients (
-  id SERIAL PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  name VARCHAR(80) UNIQUE NOT NULL,
-  code VARCHAR(80) UNIQUE NOT NULL
-);
-`;
-
 class ProjectClientRepo {
   static async find() {
     try {
       const result = await pool.query(`
-      SELECT id, name, code
+      SELECT
+      id,
+      name,
+      code,
+      kam.shortname AS kam
       FROM project_clients
+      JOIN users AS kam ON kam.id = project_clients.kam_id
       ORDER BY name;
       `);
       return result?.rows;
@@ -29,7 +23,16 @@ class ProjectClientRepo {
   static async findById(id: string) {
     try {
       const result = await pool.query(
-        `SELECT id, name, code FROM project_clients WHERE id = $1;`,
+        `SELECT
+        id,
+        name,
+        code,
+        kam_id,
+        kam.shortname AS kam
+        FROM project_clients
+        JOIN users AS kam ON kam.id = project_clients.kam_id
+        FROM project_clients
+        WHERE id = $1;`,
         [id]
       );
       return result?.rows[0];
@@ -62,15 +65,24 @@ class ProjectClientRepo {
     }
   }
 
-  static async insert({ name, code }: { name: string; code: string }) {
+  static async insert({
+    name,
+    code,
+    kam_id,
+  }: {
+    name: string;
+    code: string;
+    kam_id: string;
+  }) {
     try {
       const result = await pool.query(
         `INSERT INTO project_clients (
           name,
-          code)
-          VALUES ($1, $2)
+          code,
+          kam_id)
+          VALUES ($1, $2, $3)
           RETURNING id, name, code;`,
-        [name, code]
+        [name, code, kam_id]
       );
       return result?.rows[0];
     } catch (error: any) {
@@ -82,20 +94,23 @@ class ProjectClientRepo {
     id,
     name,
     code,
+    kam_id,
   }: {
     id: string;
     name: string;
     code: string;
+    kam_id: string;
   }) {
     try {
       const result = await pool.query(
         `UPDATE project_clients SET
           name = $2,
           code = $3,
+          kam_id = $4,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, rfq_code;`,
-        [id, name, code]
+        [id, name, code, kam_id]
       );
       return result?.rows[0];
     } catch (error: any) {

@@ -16,15 +16,10 @@ router.put(
       .notEmpty()
       .escape()
       .withMessage("You must supply a client name"),
-    body("kam_id")
-      .trim()
-      .notEmpty()
-      .isNumeric()
-      .withMessage("You must supply a KamId"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { name, code, kam_id } = req.body;
+    const { name, code } = req.body;
     const { id } = req.params;
 
     const existingClient = await ProjectClientRepo.findById(id);
@@ -36,7 +31,6 @@ router.put(
       id,
       name,
       code,
-      kam_id,
     });
 
     res.status(200).send(newClient);

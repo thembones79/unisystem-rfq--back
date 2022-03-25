@@ -3,7 +3,7 @@ import { body } from "express-validator";
 
 import { validateRequest, requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
-import { ProjectClientRepo } from "../../repos/project-client-repo";
+import { ProjectRepo } from "../../repos/project-repo";
 import { generateClientCode } from "../../services/clientCodeGenerator";
 
 const router = express.Router();
@@ -37,40 +37,45 @@ const newClientCode = async (name: string) => {
   return clientCode;
 };
 
-router.post(
-  "/clients",
-  requireAuth,
-  [
-    body("name")
-      .trim()
-      .notEmpty()
-      .escape()
-      .withMessage("You must supply a distributor name"),
-    body("kam_id")
-      .trim()
-      .notEmpty()
-      .isNumeric()
-      .withMessage("You must supply a KamId"),
-  ],
-  validateRequest,
-  async (req: Request, res: Response) => {
-    const { name, kam_id } = req.body;
+project_code, // generate - get client code, find highest number, add 1, add zeros, concatenate
+  project_client_id, // body
+  industry_id, //body
+  rfq_id, // conditional ???
+  department, //body
+  pm_id, //body
+  clickup_id, //""
+  version,
+  "";
+revision, "";
+note, //body
+  router.post(
+    "/projects",
+    requireAuth,
+    [
+      body("name")
+        .trim()
+        .notEmpty()
+        .escape()
+        .withMessage("You must supply a distributor name"),
+    ],
+    validateRequest,
+    async (req: Request, res: Response) => {
+      const { name } = req.body;
 
-    const existingClient = await ProjectClientRepo.findByName(name);
-    if (existingClient) {
-      throw new BadRequestError("Client already exists", "name");
+      const existingClient = await ProjectClientRepo.findByName(name);
+      if (existingClient) {
+        throw new BadRequestError("Client already exists", "name");
+      }
+
+      const code = await newClientCode(name);
+
+      const newProject = await ProjectRepo.insert({
+        name,
+        code,
+      });
+
+      res.status(201).send(newClient);
     }
+  );
 
-    const code = await newClientCode(name);
-
-    const newClient = await ProjectClientRepo.insert({
-      name,
-      code,
-      kam_id,
-    });
-
-    res.status(201).send(newClient);
-  }
-);
-
-export { router as newProjectClientRouter };
+export { router as newProjectRouter };
