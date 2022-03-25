@@ -4,11 +4,10 @@ import { body } from "express-validator";
 import { validateRequest, requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
 import { ProjectRepo } from "../../repos/project-repo";
+import { ProjectClientRepo } from "../../repos/project-client-repo";
 import { generateClientCode } from "../../services/clientCodeGenerator";
 
 const router = express.Router();
-
-const NUMBER_OF_TWO_LETTER_COMBINATIONS = 26 * 26;
 
 const newClientCode = async (name: string) => {
   const firstLetter = name.substring(0, 1).toUpperCase();
@@ -37,45 +36,49 @@ const newClientCode = async (name: string) => {
   return clientCode;
 };
 
-project_code, // generate - get client code, find highest number, add 1, add zeros, concatenate
-  project_client_id, // body
-  industry_id, //body
-  rfq_id, // conditional ???
-  department, //body
-  pm_id, //body
-  clickup_id, //""
-  version,
-  "";
-revision, "";
-note, //body
-  router.post(
-    "/projects",
-    requireAuth,
-    [
-      body("name")
-        .trim()
-        .notEmpty()
-        .escape()
-        .withMessage("You must supply a distributor name"),
-    ],
-    validateRequest,
-    async (req: Request, res: Response) => {
-      const { name } = req.body;
+////// project_code, // generate - get client code, find highest number, add 1, add zeros, concatenate
 
-      const existingClient = await ProjectClientRepo.findByName(name);
-      if (existingClient) {
-        throw new BadRequestError("Client already exists", "name");
-      }
+router.post(
+  "/projects",
+  requireAuth,
+  [
+    body("name")
+      .trim()
+      .notEmpty()
+      .escape()
+      .withMessage("You must supply a distributor name"),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { project_client_id, industry_id, department, pm_id, note, rfq_id } =
+      req.body;
 
-      const code = await newClientCode(name);
+    const client = await ProjectClientRepo.findById(project_client_id);
+    const clientCode = client.code as string;
 
-      const newProject = await ProjectRepo.insert({
-        name,
-        code,
-      });
+    const lastNumber = await ProjectRepo.findMaxNumberForGivenCode(clientCode);
 
-      res.status(201).send(newClient);
-    }
-  );
+    const clickup_id = "";
+    const version = "";
+    const revision = "";
+
+    const project_code = "######";
+
+    const newProject = await ProjectRepo.insert({
+      project_code,
+      project_client_id,
+      industry_id,
+      department,
+      pm_id,
+      note,
+      rfq_id,
+      clickup_id,
+      version,
+      revision,
+    });
+
+    res.status(201).send(newProject);
+  }
+);
 
 export { router as newProjectRouter };

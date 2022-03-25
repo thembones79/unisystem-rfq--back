@@ -98,6 +98,20 @@ class ProjectRepo {
     }
   }
 
+  static async findMaxNumberForGivenCode(clientCode: string) {
+    try {
+      const result = await pool.query(
+        `SELECT COUNT(*) FROM project_clients WHERE name LIKE $1;`,
+        [`${letter}%`]
+      );
+
+      console.log({ count: parseInt(result?.rows[0].count) });
+      return parseInt(result?.rows[0].count);
+    } catch (error: any) {
+      throw new BadRequestError(error.message);
+    }
+  }
+
   static async insert({
     project_code,
     project_client_id,
