@@ -8,7 +8,7 @@ import { PartnumberRepo } from "../../repos/partnumber-repo";
 const router = express.Router();
 
 router.put(
-  "/partnumberss/:id",
+  "/partnumbers/:id",
   requireAuth,
   [body("note").trim(), body("version").trim(), body("revision").trim()],
   validateRequest,

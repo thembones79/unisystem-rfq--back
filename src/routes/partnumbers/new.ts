@@ -26,7 +26,7 @@ const generatePartnumber = async ({
   `UC${size}${display}${touch}${mechanics}-${projectCode}`;
 
 router.post(
-  "/projects",
+  "/partnumbers",
   requireAuth,
   [
     body("project_id")

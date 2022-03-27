@@ -34,14 +34,14 @@ class ProjectRepo {
         SELECT
           p.id,
           project_code,
-          department,
+          p.department AS department,
           project_clients.name AS client,
           industries.name AS industry,
           pm.shortname AS pm,
           kam.shortname AS kam,
           rfq_id,
-          rfqs.name AS rfq,
-          clickup_id,
+          rfqs.rfq_code AS rfq,
+          p.clickup_id AS clickup_id,
           version,
           revision,
           note,
@@ -52,7 +52,7 @@ class ProjectRepo {
           JOIN rfqs ON rfqs.id = p.rfq_id
           JOIN users AS pm ON pm.id = p.pm_id
           JOIN users AS kam ON kam.id = project_clients.kam_id
-        WHERE r.id = $1
+        WHERE p.id = $1
         `,
         [id]
       );
@@ -101,11 +101,11 @@ class ProjectRepo {
   static async findMaxNumberForGivenCode(clientCode: string) {
     try {
       const result = await pool.query(
-        `SELECT MAX(code) FROM project_clients WHERE code LIKE $1;`,
+        `SELECT MAX(project_code) FROM projects WHERE project_code LIKE $1;`,
         [`${clientCode}%`]
       );
 
-      console.log({ count: parseInt(result?.rows[0]) });
+      console.log({ count: result?.rows[0] });
       const max = result?.rows[0].max;
       return max ? parseInt(max.substring(max.length - 3)) : 0;
     } catch (error: any) {

@@ -6,7 +6,7 @@ class ProjectClientRepo {
     try {
       const result = await pool.query(`
       SELECT
-      id,
+      project_clients.id AS id,
       name,
       code,
       kam.shortname AS kam
@@ -24,15 +24,14 @@ class ProjectClientRepo {
     try {
       const result = await pool.query(
         `SELECT
-        id,
+        p.id AS id,
         name,
         code,
         kam_id,
         kam.shortname AS kam
-        FROM project_clients
-        JOIN users AS kam ON kam.id = project_clients.kam_id
-        FROM project_clients
-        WHERE id = $1;`,
+        FROM project_clients AS p
+        JOIN users AS kam ON kam.id = p.kam_id
+        WHERE p.id = $1;`,
         [id]
       );
       return result?.rows[0];

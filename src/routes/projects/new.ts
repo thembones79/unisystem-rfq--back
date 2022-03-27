@@ -55,7 +55,7 @@ router.post(
     const clickup_id = "";
     const version = "";
     const revision = "";
-
+    console.log({ project_client_id });
     const newProject = await ProjectRepo.insert({
       project_code,
       project_client_id,
