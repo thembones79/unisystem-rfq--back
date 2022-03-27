@@ -24,7 +24,7 @@ router.put(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { name, code, kam_id } = req.body;
+    const { name, kam_id } = req.body;
     const { id } = req.params;
 
     const existingClient = await ProjectClientRepo.findById(id);
@@ -35,7 +35,6 @@ router.put(
     const updatedClient = await ProjectClientRepo.updateData({
       id,
       name,
-      code,
       kam_id,
     });
 

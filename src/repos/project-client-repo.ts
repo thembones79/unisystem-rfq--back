@@ -92,24 +92,21 @@ class ProjectClientRepo {
   static async updateData({
     id,
     name,
-    code,
     kam_id,
   }: {
     id: string;
     name: string;
-    code: string;
     kam_id: string;
   }) {
     try {
       const result = await pool.query(
         `UPDATE project_clients SET
           name = $2,
-          code = $3,
-          kam_id = $4,
+          kam_id = $3,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
-          RETURNING id, rfq_code;`,
-        [id, name, code, kam_id]
+          RETURNING id, name, code;`,
+        [id, name, kam_id]
       );
       return result?.rows[0];
     } catch (error: any) {

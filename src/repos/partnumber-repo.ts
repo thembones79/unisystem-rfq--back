@@ -6,22 +6,22 @@ class PartnumberRepo {
     try {
       const result = await pool.query(`
       SELECT
-        p.id,
-        pn,
-        projects.department AS department,
-        projects.project_code AS project,
-        project_clients.name AS client,
-        industries.name AS industry,
-        pm.shortname AS pm,
-        kam.shortname AS kam,
-        to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
-        FROM partnumbers AS p
-        JOIN projects ON projects.id = p.project_id
-        JOIN project_clients ON project_clients.id = projects.project_client_id
-        JOIN industries ON industries.id = projects.industry_id
-        JOIN users AS pm ON pm.id = projects.pm_id
-        JOIN users AS kam ON kam.id = projects.kam_id
-        ORDER BY updated DESC;
+      p.id,
+      pn,
+      projects.department AS department,
+      projects.project_code AS project,
+      project_clients.name AS client,
+      industries.name AS industry,
+      pm.shortname AS pm,
+      kam.shortname AS kam,
+      to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
+      FROM partnumbers AS p
+      JOIN projects ON projects.id = p.project_id
+      JOIN project_clients ON project_clients.id = projects.project_client_id
+      JOIN industries ON industries.id = projects.industry_id
+      JOIN users AS pm ON pm.id = projects.pm_id
+      JOIN users AS kam ON kam.id = project_clients.kam_id
+      ORDER BY updated DESC;
       `);
       return result?.rows;
     } catch (error: any) {
@@ -42,17 +42,17 @@ class PartnumberRepo {
         industries.name AS industry,
         pm.shortname AS pm,
         kam.shortname AS kam,
-        version,
-        revision,
-        note,
+        p.version AS version,
+        p.revision AS revision,
+        p.note AS note,
         to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM partnumbers AS p
         JOIN projects ON projects.id = p.project_id
         JOIN project_clients ON project_clients.id = projects.project_client_id
         JOIN industries ON industries.id = projects.industry_id
         JOIN users AS pm ON pm.id = projects.pm_id
-        JOIN users AS kam ON kam.id = projects.kam_id
-        WHERE r.id = $1
+        JOIN users AS kam ON kam.id = project_clients.kam_id
+        WHERE p.id = $1
         `,
         [id]
       );
