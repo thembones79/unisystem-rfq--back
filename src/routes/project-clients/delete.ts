@@ -3,6 +3,7 @@ import express from "express";
 import { requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
 import { ProjectClientRepo } from "../../repos/project-client-repo";
+import { ProjectRepo } from "../../repos/project-repo";
 
 const router = express.Router();
 
@@ -14,12 +15,12 @@ router.delete("/clients/:id", requireAuth, async (req, res) => {
     throw new BadRequestError("Client does not exist");
   }
 
-  // const rfqs = await RfqRepo.findByDistributorId(id);
-  // if (rfqs && rfqs.length > 0) {
-  //   throw new BadRequestError(
-  //     "Client has RFQs. Delete RFQs first or attach them to another distributor."
-  //   );
-  // }
+  const projects = await ProjectRepo.findByClientId(id);
+  if (projects && projects.length > 0) {
+    throw new BadRequestError(
+      "This client has projects. Delete projects first in order to remove the client."
+    );
+  }
 
   const deletedProjectClient = await ProjectClientRepo.delete(id);
   res.send(deletedProjectClient);

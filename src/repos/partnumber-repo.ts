@@ -119,14 +119,11 @@ class PartnumberRepo {
 
   static async updateData({
     id,
-    project_id,
     version,
     revision,
     note,
   }: {
     id: string;
-    pn: string;
-    project_id: string;
     version: string;
     revision: string;
     note: string;
@@ -134,14 +131,13 @@ class PartnumberRepo {
     try {
       const result = await pool.query(
         `UPDATE partnumbers SET
-          project_id = $2,
-          version = $3,
-          revision = $4,
-          note = $5,
+          version = $2,
+          revision = $3,
+          note = $4,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, pn;`,
-        [id, project_id, version, revision, note]
+        [id, version, revision, note]
       );
       return result?.rows[0];
     } catch (error: any) {

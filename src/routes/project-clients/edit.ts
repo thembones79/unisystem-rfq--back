@@ -32,14 +32,14 @@ router.put(
       throw new BadRequestError("Client does not exist");
     }
 
-    const newClient = await ProjectClientRepo.updateData({
+    const updatedClient = await ProjectClientRepo.updateData({
       id,
       name,
       code,
       kam_id,
     });
 
-    res.status(200).send(newClient);
+    res.status(200).send(updatedClient);
   }
 );
 

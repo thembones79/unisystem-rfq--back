@@ -27,12 +27,12 @@ router.put(
       throw new BadRequestError("Distributor does not exist");
     }
 
-    const newDistributor = await DistributorRepo.updateData({
+    const updatedDistributor = await DistributorRepo.updateData({
       id,
       name,
     });
 
-    res.status(200).send(newDistributor);
+    res.status(200).send(updatedDistributor);
   }
 );
 

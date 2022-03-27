@@ -1,19 +1,19 @@
 import express from "express";
 import { requireAuth } from "../../middlewares";
-import { ProjectClientRepo } from "../../repos/project-client-repo";
+import { ProjectRepo } from "../../repos/project-repo";
 import { NotFoundError } from "../../errors";
 
 const router = express.Router();
 
-router.get("/clients/:id", requireAuth, async (req, res) => {
+router.get("/projects/:id", requireAuth, async (req, res) => {
   const { id } = req.params;
-  const client = await ProjectClientRepo.findById(id);
+  const project = await ProjectRepo.findById(id);
 
-  if (!client) {
+  if (!project) {
     throw new NotFoundError();
   }
 
-  res.send(client);
+  res.send(project);
 });
 
-export { router as showProjectClientRouter };
+export { router as showProjectRouter };

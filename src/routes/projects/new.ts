@@ -2,67 +2,59 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 
 import { validateRequest, requireAuth } from "../../middlewares";
-import { BadRequestError } from "../../errors";
 import { ProjectRepo } from "../../repos/project-repo";
 import { ProjectClientRepo } from "../../repos/project-client-repo";
-import { generateClientCode } from "../../services/clientCodeGenerator";
+import { concatZeros } from "../../services/concatZeros";
 
 const router = express.Router();
 
-const newClientCode = async (name: string) => {
-  const firstLetter = name.substring(0, 1).toUpperCase();
-  const numberOfClients = await ProjectClientRepo.countByFirstLetter(
-    firstLetter
-  );
-
-  if (numberOfClients === NUMBER_OF_TWO_LETTER_COMBINATIONS) {
-    throw new BadRequestError(
-      `
-    All possible combinations were used!
-    You cannot add more customers whose name starts with letter ${firstLetter}
-    `,
-      "name"
-    );
-  }
-
-  let clientCode = generateClientCode(name);
-  let isCodeExist = await ProjectClientRepo.findByCode(clientCode);
-
-  while (isCodeExist) {
-    clientCode = generateClientCode(name);
-    isCodeExist = await ProjectClientRepo.findByCode(clientCode);
-  }
-
-  return clientCode;
+const newProjectCode = async (clientId: string) => {
+  const client = await ProjectClientRepo.findById(clientId);
+  const clientCode = client.code as string;
+  const lastNumber = await ProjectRepo.findMaxNumberForGivenCode(clientCode);
+  return clientCode + concatZeros(lastNumber + 1 + "", 3);
 };
-
-////// project_code, // generate - get client code, find highest number, add 1, add zeros, concatenate
 
 router.post(
   "/projects",
   requireAuth,
   [
-    body("name")
+    body("project_client_id")
       .trim()
       .notEmpty()
-      .escape()
-      .withMessage("You must supply a distributor name"),
+      .isNumeric()
+      .withMessage("You must supply a ClientId"),
+    body("industry_id")
+      .trim()
+      .notEmpty()
+      .isNumeric()
+      .withMessage("You must supply a IndustryId"),
+    body("pm_id")
+      .trim()
+      .notEmpty()
+      .isNumeric()
+      .withMessage("You must supply a PmId"),
+    body("rfq_id")
+      .trim()
+      .notEmpty()
+      .isNumeric()
+      .withMessage("You must supply a RfqId"),
+    body("department")
+      .notEmpty()
+      .trim()
+      .withMessage("You must supply a Department"),
+    body("note").trim(),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
     const { project_client_id, industry_id, department, pm_id, note, rfq_id } =
       req.body;
 
-    const client = await ProjectClientRepo.findById(project_client_id);
-    const clientCode = client.code as string;
-
-    const lastNumber = await ProjectRepo.findMaxNumberForGivenCode(clientCode);
+    const project_code = await newProjectCode(project_client_id);
 
     const clickup_id = "";
     const version = "";
     const revision = "";
-
-    const project_code = "######";
 
     const newProject = await ProjectRepo.insert({
       project_code,

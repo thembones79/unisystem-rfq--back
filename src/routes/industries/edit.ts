@@ -27,12 +27,12 @@ router.put(
       throw new BadRequestError("Industry does not exist");
     }
 
-    const newIndustry = await IndustryRepo.updateData({
+    const updatedIndustry = await IndustryRepo.updateData({
       id,
       name,
     });
 
-    res.status(200).send(newIndustry);
+    res.status(200).send(updatedIndustry);
   }
 );
 

@@ -3,38 +3,43 @@ import { body } from "express-validator";
 
 import { validateRequest, requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
-import { ProjectClientRepo } from "../../repos/project-client-repo";
+import { ProjectRepo } from "../../repos/project-repo";
 
 const router = express.Router();
 
 router.put(
-  "/clients/:id",
+  "/projects/:id",
   requireAuth,
   [
-    body("name")
+    body("pm_id")
       .trim()
       .notEmpty()
-      .escape()
-      .withMessage("You must supply a client name"),
+      .isNumeric()
+      .withMessage("You must supply a PmId"),
+    body("note").trim(),
+    body("version").trim(),
+    body("revision").trim(),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { name, code } = req.body;
+    const { pm_id, note, version, revision } = req.body;
     const { id } = req.params;
 
-    const existingClient = await ProjectClientRepo.findById(id);
-    if (!existingClient) {
-      throw new BadRequestError("Client does not exist");
+    const existingProject = await ProjectRepo.findById(id);
+    if (!existingProject) {
+      throw new BadRequestError("Project does not exist");
     }
 
-    const newClient = await ProjectClientRepo.updateData({
+    const updatedProject = await ProjectRepo.updateData({
       id,
-      name,
-      code,
+      pm_id,
+      note,
+      version,
+      revision,
     });
 
-    res.status(200).send(newClient);
+    res.status(200).send(updatedProject);
   }
 );
 
-export { router as updateProjectClientRouter };
+export { router as updateProjectRouter };

@@ -101,12 +101,13 @@ class ProjectRepo {
   static async findMaxNumberForGivenCode(clientCode: string) {
     try {
       const result = await pool.query(
-        `SELECT COUNT(*) FROM project_clients WHERE name LIKE $1;`,
-        [`${letter}%`]
+        `SELECT MAX(code) FROM project_clients WHERE code LIKE $1;`,
+        [`${clientCode}%`]
       );
 
-      console.log({ count: parseInt(result?.rows[0].count) });
-      return parseInt(result?.rows[0].count);
+      console.log({ count: parseInt(result?.rows[0]) });
+      const max = result?.rows[0].max;
+      return max ? parseInt(max.substring(max.length - 3)) : 0;
     } catch (error: any) {
       throw new BadRequestError(error.message);
     }
@@ -171,23 +172,13 @@ class ProjectRepo {
 
   static async updateData({
     id,
-    project_client_id,
-    industry_id,
-    rfq_id,
-    department,
     pm_id,
-    clickup_id,
     version,
     revision,
     note,
   }: {
     id: string;
-    project_client_id: string;
-    industry_id: string;
-    rfq_id: string;
-    department: string;
     pm_id: string;
-    clickup_id: string;
     version: string;
     revision: string;
     note: string;
@@ -195,30 +186,14 @@ class ProjectRepo {
     try {
       const result = await pool.query(
         `UPDATE projects SET
-          project_client_id = $2,
-          industry_id = $3,
-          rfq_id = $4,
-          department = $5,
-          pm_id = $6,
-          clickup_id = $7,
-          version = $8,
-          revision = $9,
-          note = $10,
+          pm_id = $2,
+          version = $3,
+          revision = $4,
+          note = $5,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, project_code;`,
-        [
-          id,
-          project_client_id,
-          industry_id,
-          rfq_id,
-          department,
-          pm_id,
-          clickup_id,
-          version,
-          revision,
-          note,
-        ]
+        [id, pm_id, version, revision, note]
       );
       return result?.rows[0];
     } catch (error: any) {

@@ -1,12 +1,12 @@
 import express from "express";
 import { requireAuth } from "../../middlewares";
-import { ProjectClientRepo } from "../../repos/project-client-repo";
+import { ProjectRepo } from "../../repos/project-repo";
 
 const router = express.Router();
 
-router.get("/clients", requireAuth, async (req, res) => {
-  const clients = await ProjectClientRepo.find();
-  res.send(clients);
+router.get("/projects", requireAuth, async (req, res) => {
+  const projects = await ProjectRepo.find();
+  res.send(projects);
 });
 
-export { router as projectClientListRouter };
+export { router as projectListRouter };
