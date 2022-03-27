@@ -21,7 +21,14 @@ interface IClickUpUser {
   user: ITeamMember;
 }
 
+interface ICreateList {
+  listName: string;
+  folderId: string;
+}
+
 const CLICKUP_UNISYSTEM_RFQ_LIST = 168766394;
+
+const CLICKUP_PM_SPACE = 4625373;
 
 export class ClickUp {
   static async findUserId(email: string) {
@@ -55,6 +62,44 @@ export class ClickUp {
           name: rfqCode,
           assignees: [userId],
           status: "open projects",
+        },
+        {
+          headers: { Authorization: keys.CLICKUP_API_SECRET },
+        }
+      );
+
+      return response.data.id;
+    } catch (e: any) {
+      console.warn(e);
+      throw new BadRequestError(e.response.data.error);
+    }
+  }
+
+  static async createFolder(folderName: string) {
+    try {
+      const response = await axios.post(
+        `https://api.clickup.com/api/v2/space/${CLICKUP_PM_SPACE}/folder`,
+        {
+          name: folderName,
+        },
+        {
+          headers: { Authorization: keys.CLICKUP_API_SECRET },
+        }
+      );
+
+      return response.data.id;
+    } catch (e: any) {
+      console.warn(e);
+      throw new BadRequestError(e.response.data.error);
+    }
+  }
+
+  static async createList({ listName, folderId }: ICreateList) {
+    try {
+      const response = await axios.post(
+        `https://api.clickup.com/api/v2/folder/${folderId}/list`,
+        {
+          name: listName,
         },
         {
           headers: { Authorization: keys.CLICKUP_API_SECRET },

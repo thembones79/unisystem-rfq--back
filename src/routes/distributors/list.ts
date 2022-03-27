@@ -5,8 +5,8 @@ import { DistributorRepo } from "../../repos/distributor-repo";
 const router = express.Router();
 
 router.get("/distributors", requireAuth, async (req, res) => {
-  const users = await DistributorRepo.find();
-  res.send(users);
+  const distributors = await DistributorRepo.find();
+  res.send(distributors);
 });
 
 export { router as distributorListRouter };

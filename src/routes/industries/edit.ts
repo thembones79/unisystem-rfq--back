@@ -3,37 +3,37 @@ import { body } from "express-validator";
 
 import { validateRequest, requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
-import { DistributorRepo } from "../../repos/distributor-repo";
+import { IndustryRepo } from "../../repos/industry-repo";
 
 const router = express.Router();
 
 router.put(
-  "/distributors/:id",
+  "/industries/:id",
   requireAuth,
   [
     body("name")
       .trim()
       .notEmpty()
       .escape()
-      .withMessage("You must supply a distributor name"),
+      .withMessage("You must supply a industry name"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
     const { name } = req.body;
     const { id } = req.params;
 
-    const existingDistributor = await DistributorRepo.findById(id);
-    if (!existingDistributor) {
-      throw new BadRequestError("Distributor does not exist");
+    const existingIndustry = await IndustryRepo.findById(id);
+    if (!existingIndustry) {
+      throw new BadRequestError("Industry does not exist");
     }
 
-    const updatedDistributor = await DistributorRepo.updateData({
+    const updatedIndustry = await IndustryRepo.updateData({
       id,
       name,
     });
 
-    res.status(200).send(updatedDistributor);
+    res.status(200).send(updatedIndustry);
   }
 );
 
-export { router as updateDistributorRouter };
+export { router as updateIndustryRouter };
