@@ -21,6 +21,7 @@ class RfqRepo {
         JOIN distributors ON distributors.id = r.distributor_id
         JOIN users AS pm ON pm.id = r.pm_id
         JOIN users AS kam ON kam.id = r.kam_id
+        WHERE r.id != 1
         ORDER BY updated DESC;
       `);
       return result?.rows;
@@ -37,16 +38,18 @@ class RfqRepo {
               r.id,
               rfq_code,
               eau,
-              department,
-              clickup_id,
+              r.department AS department,
+              r.clickup_id AS clickup_id,
               customer_id,
               customers.name AS customer,
               distributor_id,
               distributors.name AS distributor,
-              pm_id,
+              r.pm_id AS pm_id,
+              projects.id AS project_id,
+              projects.project_code AS project_code,
               pm.shortname AS pm,
               pm.username AS pm_fullname,
-              kam_id,
+              r.kam_id AS kam_id,
               kam.shortname AS kam,
               kam.username AS kam_fullname,
               extra_note,
@@ -58,6 +61,7 @@ class RfqRepo {
               to_char(r.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
               FROM rfqs AS r
               JOIN customers ON customers.id = r.customer_id
+              FULL OUTER JOIN projects ON projects.rfq_id = r.id
               JOIN distributors ON distributors.id = r.distributor_id
               JOIN users AS pm ON pm.id = r.pm_id
               JOIN users AS kam ON kam.id = r.kam_id
@@ -238,6 +242,11 @@ class RfqRepo {
   }
 
   static async delete(id: string) {
+    if (id === "1") {
+      throw new BadRequestError(
+        `This is "SPECIAL" RFQ - you cannot delete it!`
+      );
+    }
     try {
       const result = await pool.query(
         `DELETE FROM rfqs WHERE id = $1 RETURNING id, rfq_code;`,

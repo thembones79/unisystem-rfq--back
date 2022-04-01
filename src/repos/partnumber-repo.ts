@@ -36,10 +36,13 @@ class PartnumberRepo {
         SELECT
         p.id,
         pn,
+        p.project_id AS project_id,
         projects.department AS department,
         projects.project_code AS project,
         project_clients.name AS client,
         industries.name AS industry,
+        pm.username AS pm_fullname,
+        kam.username AS kam_fullname,
         pm.shortname AS pm,
         kam.shortname AS kam,
         p.version AS version,

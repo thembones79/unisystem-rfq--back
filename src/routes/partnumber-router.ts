@@ -6,6 +6,7 @@ import {
   updatePartnumberRouter,
   deletePartnumberRouter,
   showPartnumberRouter,
+  showPartnumbersForProjectRouter,
 } from "./partnumbers";
 
 const app = express();
@@ -15,5 +16,6 @@ app.use(newPartnumberRouter);
 app.use(updatePartnumberRouter);
 app.use(deletePartnumberRouter);
 app.use(showPartnumberRouter);
+app.use(showPartnumbersForProjectRouter);
 
 export { app as partnumberRouter };
