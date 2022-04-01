@@ -61,6 +61,9 @@ router.put(
       department,
     } = req.body;
     const { id } = req.params;
+    if (id === "1") {
+      throw new BadRequestError(`This is "SPECIAL" RFQ - you cannot edit it!`);
+    }
 
     let existingRfq = await RfqRepo.findById(id);
     if (!existingRfq) {

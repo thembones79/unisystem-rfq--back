@@ -1,10 +1,10 @@
 /**
- * Accepted values: "L" - for letters content or "D" - for digits content.
+ * Accepted values: `"L"` - for letters content or `"D"` - for digits content.
  */
 type ContentType = "L" | "D";
 
 /**
- * Optional content argument accepts: "L" - for letters content or "D" - for digits content. When not provided, generated code will consist digits and letters.
+ * @param content argument accepts: `"L"` - for letters content or `"D"` - for digits content. When not provided, generated code will consist digits and letters.
  */
 export const generateRandomCode = (length: number, content?: ContentType) => {
   let chars = "";
