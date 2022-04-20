@@ -4,7 +4,9 @@ import { BadRequestError } from "../errors";
 
 interface IcreateTask {
   pmEmail: string;
-  rfqCode: string;
+  code: string;
+  status?: string;
+  list?: string;
 }
 
 interface IUpdateDescription {
@@ -52,16 +54,18 @@ export class ClickUp {
     }
   }
 
-  static async createTask({ pmEmail, rfqCode }: IcreateTask) {
+  static async createTask({ pmEmail, code, status, list }: IcreateTask) {
     const userId = await this.findUserId(pmEmail);
 
     try {
       const response = await axios.post(
-        `https://api.clickup.com/api/v2/list/${CLICKUP_UNISYSTEM_RFQ_LIST}/task`,
+        `https://api.clickup.com/api/v2/list/${
+          list || CLICKUP_UNISYSTEM_RFQ_LIST
+        }/task`,
         {
-          name: rfqCode,
+          name: code,
           assignees: [userId],
-          status: "open projects",
+          status: status || "open projects",
         },
         {
           headers: { Authorization: keys.CLICKUP_API_SECRET },

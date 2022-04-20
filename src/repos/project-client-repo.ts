@@ -27,8 +27,11 @@ class ProjectClientRepo {
         p.id AS id,
         name,
         code,
+        client_list_clickup_id,
         kam_id,
-        kam.shortname AS kam
+        kam.shortname AS kam,
+        kam.role_id AS kam_role,
+        kam.shortname_alt AS kam_alt
         FROM project_clients AS p
         JOIN users AS kam ON kam.id = p.kam_id
         WHERE p.id = $1;`,

@@ -91,7 +91,7 @@ router.post(
 
     const clickupId = await ClickUp.createTask({
       pmEmail,
-      rfqCode: rfqCodeWithExtraNote,
+      code: rfqCodeWithExtraNote,
     });
 
     const rfq = await RfqRepo.insert({
