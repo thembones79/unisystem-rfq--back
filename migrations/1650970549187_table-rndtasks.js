@@ -17,6 +17,6 @@ exports.up = (pgm) => {
 
 exports.down = (pgm) => {
   pgm.sql(`
-  DROP TABLE partnumbers;
+  DROP TABLE rndtasks;
   `);
 };

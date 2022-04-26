@@ -6,21 +6,11 @@ class RndTaskRepo {
     try {
       const result = await pool.query(`
       SELECT
-      p.id,
-      pn,
-      projects.department AS department,
-      projects.project_code AS project,
-      project_clients.name AS client,
-      industries.name AS industry,
-      pm.shortname AS pm,
-      kam.shortname AS kam,
+      project_id,
+      rndtask_clickup_id,
+      serial,
       to_char(p.created_at, 'YYYY-MM-DD HH24:MI:SS') as created
-      FROM partnumbers AS p
-      JOIN projects ON projects.id = p.project_id
-      JOIN project_clients ON project_clients.id = projects.project_client_id
-      JOIN industries ON industries.id = projects.industry_id
-      JOIN users AS pm ON pm.id = projects.pm_id
-      JOIN users AS kam ON kam.id = project_clients.kam_id
+      FROM rndtasks
       ORDER BY created;
       `);
       return result?.rows;
@@ -29,58 +19,58 @@ class RndTaskRepo {
     }
   }
 
-  static async findById(id: string) {
-    try {
-      const result = await pool.query(
-        `
-        SELECT
-        p.id,
-        pn,
-        p.project_id AS project_id,
-        projects.department AS department,
-        projects.project_code AS project,
-        project_clients.name AS client,
-        industries.name AS industry,
-        pm.username AS pm_fullname,
-        kam.username AS kam_fullname,
-        pm.shortname AS pm,
-        kam.shortname AS kam,
-        p.version AS version,
-        p.revision AS revision,
-        p.note AS note,
-        to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
-        FROM partnumbers AS p
-        JOIN projects ON projects.id = p.project_id
-        JOIN project_clients ON project_clients.id = projects.project_client_id
-        JOIN industries ON industries.id = projects.industry_id
-        JOIN users AS pm ON pm.id = projects.pm_id
-        JOIN users AS kam ON kam.id = project_clients.kam_id
-        WHERE p.id = $1
-        `,
-        [id]
-      );
-      return result?.rows[0];
-    } catch (error: any) {
-      throw new BadRequestError(error.message);
-    }
-  }
+  // static async findById(id: string) {
+  //   try {
+  //     const result = await pool.query(
+  //       `
+  //       SELECT
+  //       p.id,
+  //       pn,
+  //       p.project_id AS project_id,
+  //       projects.department AS department,
+  //       projects.project_code AS project,
+  //       project_clients.name AS client,
+  //       industries.name AS industry,
+  //       pm.username AS pm_fullname,
+  //       kam.username AS kam_fullname,
+  //       pm.shortname AS pm,
+  //       kam.shortname AS kam,
+  //       p.version AS version,
+  //       p.revision AS revision,
+  //       p.note AS note,
+  //       to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
+  //       FROM partnumbers AS p
+  //       JOIN projects ON projects.id = p.project_id
+  //       JOIN project_clients ON project_clients.id = projects.project_client_id
+  //       JOIN industries ON industries.id = projects.industry_id
+  //       JOIN users AS pm ON pm.id = projects.pm_id
+  //       JOIN users AS kam ON kam.id = project_clients.kam_id
+  //       WHERE p.id = $1
+  //       `,
+  //       [id]
+  //     );
+  //     return result?.rows[0];
+  //   } catch (error: any) {
+  //     throw new BadRequestError(error.message);
+  //   }
+  // }
 
-  static async findByPartnumber(pn: string) {
-    try {
-      const result = await pool.query(
-        `SELECT id, pn FROM partnumbers WHERE pn = $1;`,
-        [pn]
-      );
-      return result?.rows[0];
-    } catch (error: any) {
-      throw new BadRequestError(error.message);
-    }
-  }
+  // static async findByPartnumber(pn: string) {
+  //   try {
+  //     const result = await pool.query(
+  //       `SELECT id, pn FROM partnumbers WHERE pn = $1;`,
+  //       [pn]
+  //     );
+  //     return result?.rows[0];
+  //   } catch (error: any) {
+  //     throw new BadRequestError(error.message);
+  //   }
+  // }
 
   static async findByProjectId(project_id: string) {
     try {
       const result = await pool.query(
-        `SELECT id, pn, version, revision, note FROM partnumbers WHERE project_id = $1;`,
+        `SELECT project_id, serial, rndtask_clickup_id FROM rndtasks WHERE project_id = $1;`,
         [project_id]
       );
       return result?.rows;
@@ -89,30 +79,39 @@ class RndTaskRepo {
     }
   }
 
+  static async findMaxSerialForGivenProjectId(project_id: string) {
+    try {
+      const result = await pool.query(
+        `SELECT MAX(serial) FROM rndtasks WHERE project_id LIKE $1;`,
+        [`${project_id}%`]
+      );
+
+      console.log({ max_count: result?.rows[0] });
+      const max = result?.rows[0].max;
+      return max ? max : 0;
+    } catch (error: any) {
+      throw new BadRequestError(error.message);
+    }
+  }
+
   static async insert({
-    pn,
     project_id,
-    version,
-    revision,
-    note,
+    serial,
+    rndtask_clickup_id,
   }: {
-    pn: string;
     project_id: string;
-    version: string;
-    revision: string;
-    note: string;
+    serial: string;
+    rndtask_clickup_id: string;
   }) {
     try {
       const result = await pool.query(
-        `INSERT INTO partnumbers (
-          pn,
+        `INSERT INTO rndtasks (
           project_id,
-          version,
-          revision,
-          note)
-          VALUES ($1, $2, $3, $4, $5)
-          RETURNING id, pn;`,
-        [pn, project_id, version, revision, note]
+          serial,
+          rndtask_clickup_id)
+          VALUES ($1, $2, $3)
+          RETURNING project_id, serial, rndtask_clickup_id;`,
+        [project_id, serial, rndtask_clickup_id]
       );
       return result?.rows[0];
     } catch (error: any) {
@@ -120,39 +119,17 @@ class RndTaskRepo {
     }
   }
 
-  static async updateData({
-    id,
-    version,
-    revision,
-    note,
+  static async delete({
+    serial,
+    project_id,
   }: {
-    id: string;
-    version: string;
-    revision: string;
-    note: string;
+    serial: string;
+    project_id: string;
   }) {
     try {
       const result = await pool.query(
-        `UPDATE partnumbers SET
-          version = $2,
-          revision = $3,
-          note = $4,
-          updated_at = CURRENT_TIMESTAMP
-          WHERE id = $1
-          RETURNING id, pn;`,
-        [id, version, revision, note]
-      );
-      return result?.rows[0];
-    } catch (error: any) {
-      throw new BadRequestError(error.message);
-    }
-  }
-
-  static async delete(id: string) {
-    try {
-      const result = await pool.query(
-        `DELETE FROM partnumbers WHERE id = $1 RETURNING id, pn;`,
-        [id]
+        `DELETE FROM rndtasks WHERE project_id = $1 AND serial = $2 RETURNING project_id, serial;`,
+        [project_id, serial]
       );
       return result?.rows[0];
     } catch (error: any) {
@@ -162,7 +139,7 @@ class RndTaskRepo {
 
   static async count() {
     try {
-      const result = await pool.query(`SELECT COUNT(*) FROM partnumbers;`);
+      const result = await pool.query(`SELECT COUNT(*) FROM rndtasks;`);
       return parseInt(result?.rows[0].count);
     } catch (error: any) {
       throw new BadRequestError(error.message);

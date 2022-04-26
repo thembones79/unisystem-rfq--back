@@ -2,11 +2,25 @@ import axios from "axios";
 import { keys } from "../config/keys";
 import { BadRequestError } from "../errors";
 
-interface IcreateTask {
+type CustomField = {
+  id: string;
+  value: string;
+};
+
+interface ICreateTask {
   pmEmail: string;
   code: string;
   status?: string;
   list?: string;
+}
+
+interface ICreateRndTask {
+  description: string;
+  priority: string;
+  name: string;
+  status?: string;
+  custom_fields: CustomField[];
+  tags: string[];
 }
 
 interface IUpdateDescription {
@@ -29,6 +43,8 @@ interface ICreateList {
 }
 
 const CLICKUP_UNISYSTEM_RFQ_LIST = 168766394;
+
+const CLICKUP_RND_DEFAULT = 27841908;
 
 const CLICKUP_PM_SPACE = 4625373;
 
@@ -54,7 +70,7 @@ export class ClickUp {
     }
   }
 
-  static async createTask({ pmEmail, code, status, list }: IcreateTask) {
+  static async createTask({ pmEmail, code, status, list }: ICreateTask) {
     const userId = await this.findUserId(pmEmail);
 
     try {
@@ -66,6 +82,33 @@ export class ClickUp {
           name: code,
           assignees: [userId],
           status: status || "open projects",
+        },
+        {
+          headers: { Authorization: keys.CLICKUP_API_SECRET },
+        }
+      );
+
+      return response.data.id;
+    } catch (e: any) {
+      console.warn(e);
+      throw new BadRequestError(e.response.data.error);
+    }
+  }
+
+  static async createRndTask({
+    name,
+    description,
+    priority,
+    status,
+  }: ICreateRndTask) {
+    try {
+      const response = await axios.post(
+        `https://api.clickup.com/api/v2/list/${CLICKUP_RND_DEFAULT}/task`,
+        {
+          name,
+          description,
+          priority,
+          status: status || "Open",
         },
         {
           headers: { Authorization: keys.CLICKUP_API_SECRET },
@@ -146,6 +189,41 @@ export class ClickUp {
       );
 
       return response.data.status.status;
+    } catch (e: any) {
+      console.warn(e);
+      throw new BadRequestError(e.response.data.error);
+    }
+  }
+
+  static async getTaskNameAndStatus(taskId: string) {
+    try {
+      const response = await axios.get(
+        `https://api.clickup.com/api/v2/task/${taskId}`,
+        {
+          headers: { Authorization: keys.CLICKUP_API_SECRET },
+        }
+      );
+      const { name } = response.data;
+      const { status } = response.data.status;
+
+      return { name, status };
+    } catch (e: any) {
+      console.warn(e);
+      throw new BadRequestError(e.response.data.error);
+    }
+  }
+
+  static async linkTasks(task1Id: string, task2Id: string) {
+    try {
+      const response = await axios.post(
+        `https://api.clickup.com/api/v2/task/${task1Id}/link/${task2Id}/`,
+        {},
+        {
+          headers: { Authorization: keys.CLICKUP_API_SECRET },
+        }
+      );
+
+      return response.data.id;
     } catch (e: any) {
       console.warn(e);
       throw new BadRequestError(e.response.data.error);
