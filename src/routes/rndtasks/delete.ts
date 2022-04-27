@@ -2,28 +2,23 @@ import express from "express";
 
 import { requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
-import { ProjectRepo } from "../../repos/project-repo";
-import { PartnumberRepo } from "../../repos/partnumber-repo";
+import { RndTaskRepo } from "../../repos/rndtask-repo";
 
 const router = express.Router();
 
-router.delete("/projects/:id", requireAuth, async (req, res) => {
-  const { id } = req.params;
+router.delete("/projects/:id/tasks/:serial", requireAuth, async (req, res) => {
+  const { id, serial } = req.params;
 
-  const existingProject = await ProjectRepo.findById(id);
-  if (!existingProject) {
-    throw new BadRequestError("Project does not exist");
+  const existingTask = await RndTaskRepo.findByProjectIdAndSerial({
+    serial,
+    project_id: id,
+  });
+  if (!existingTask) {
+    throw new BadRequestError("Task does not exist");
   }
 
-  const partnumbers = await PartnumberRepo.findByProjectId(id);
-  if (partnumbers && partnumbers.length > 0) {
-    throw new BadRequestError(
-      "This project has partnumbers. Delete partnumbers in order to remove the project."
-    );
-  }
-
-  const deletedProject = await ProjectRepo.delete(id);
-  res.send(deletedProject);
+  const deletedTask = await RndTaskRepo.delete({ serial, project_id: id });
+  res.send(deletedTask);
 });
 
 export { router as deleteProjectRouter };

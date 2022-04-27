@@ -12,6 +12,7 @@ interface ICreateTask {
   code: string;
   status?: string;
   list?: string;
+  description?: string;
 }
 
 interface ICreateRndTask {
@@ -70,7 +71,13 @@ export class ClickUp {
     }
   }
 
-  static async createTask({ pmEmail, code, status, list }: ICreateTask) {
+  static async createTask({
+    pmEmail,
+    code,
+    status,
+    list,
+    description,
+  }: ICreateTask) {
     const userId = await this.findUserId(pmEmail);
 
     try {
@@ -81,6 +88,7 @@ export class ClickUp {
         {
           name: code,
           assignees: [userId],
+          description,
           status: status || "open projects",
         },
         {
@@ -100,6 +108,8 @@ export class ClickUp {
     description,
     priority,
     status,
+    custom_fields,
+    tags,
   }: ICreateRndTask) {
     try {
       const response = await axios.post(
@@ -108,6 +118,8 @@ export class ClickUp {
           name,
           description,
           priority,
+          custom_fields,
+          tags,
           status: status || "Open",
         },
         {

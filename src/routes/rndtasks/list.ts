@@ -10,20 +10,34 @@ router.get("/projects/:id/tasks", requireAuth, async (req, res) => {
   const tasks = await RndTaskRepo.findByProjectId(id);
 
   if (tasks) {
-    const tasksWitchClickupData = tasks.map(async (x) => {
-      const { serial, rndtask_clickup_id } = x;
-      try {
-        const { status, name } = await ClickUp.getTaskNameAndStatus(
-          rndtask_clickup_id
-        );
+    const tasksWitchClickupData = async () => {
+      return await Promise.all(
+        tasks.map(async (x) => {
+          const { serial, rndtask_clickup_id, sp, project_id } = x;
 
-        return { serial, name, status, rndtask_clickup_id };
-      } catch (error: any) {
-        console.error({ error });
-      }
-    });
+          try {
+            const { status, name } = await ClickUp.getTaskNameAndStatus(
+              rndtask_clickup_id
+            );
 
-    res.send(tasksWitchClickupData);
+            return await {
+              serial,
+              name,
+              status,
+              rndtask_clickup_id,
+              sp: encodeURI(sp),
+              project_id,
+            };
+          } catch (error: any) {
+            console.error({ error });
+          }
+        })
+      );
+    };
+
+    const response = await tasksWitchClickupData();
+
+    res.send(response);
   } else {
     res.send([]);
   }
