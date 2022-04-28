@@ -77,7 +77,7 @@ router.post(
           value: project_code,
         },
       ],
-      tags: ["added_to_svn"],
+      tags: ["waiting_for_autobot"],
     });
 
     await ClickUp.linkTasks(rndtask_clickup_id, clickup_id);
