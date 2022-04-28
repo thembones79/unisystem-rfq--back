@@ -58,6 +58,7 @@ export const spFileCreate = async ({
 
   try {
     await spsave(coreOptions, creds, fileOptions);
+    return `${coreOptions.siteUrl}/${fileOptions.folder}`;
   } catch (error: any) {
     console.error(error);
     throw new BadRequestError("Dir not created");

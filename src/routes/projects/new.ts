@@ -7,6 +7,7 @@ import { ProjectRepo } from "../../repos/project-repo";
 import { ProjectClientRepo } from "../../repos/project-client-repo";
 import { concatZeros } from "../../services/concatZeros";
 import { UserRepo } from "../../repos/user-repo";
+import { keys } from "../../config/keys";
 import { BadRequestError } from "../../errors";
 
 const router = express.Router();
@@ -61,6 +62,14 @@ router.post(
     const clientKamAlt = client.kam_alt as string;
     const clientKamRole = client.kam_role as number;
     const project_code = await newProjectCode(clientCode);
+    const department = clientKamRole === 4 ? "EX" : "PL";
+
+    const sp = await spFileCreate({
+      projectCode: project_code,
+      department,
+      clientName,
+      kam: clientKamAlt,
+    });
 
     const clickup_id = await ClickUp.createTask({
       pmEmail,
@@ -71,7 +80,6 @@ router.post(
 
     const version = "";
     const revision = "";
-    const department = clientKamRole === 4 ? "EX" : "PL";
 
     const newProject = await ProjectRepo.insert({
       project_code,
@@ -86,12 +94,17 @@ router.post(
       revision,
     });
 
-    await spFileCreate({
-      projectCode: project_code,
-      department,
-      clientName,
-      kam: clientKamAlt,
-    });
+    const appPath = `${keys.CLIENT_ORIGIN}/projects/${newProject.id}`;
+
+    const description = `
+
+      ${encodeURI(sp)}
+
+      ${appPath}
+
+    `;
+
+    await ClickUp.updateDescription({ taskId: clickup_id, description });
 
     res.status(201).send(newProject);
   }

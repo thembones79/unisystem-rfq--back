@@ -8,6 +8,7 @@ import { projectClientRouter } from "./project-client-router";
 import { industryRouter } from "./industry-router";
 import { projectRouter } from "./project-router";
 import { partnumberRouter } from "./partnumber-router";
+import { rndTaskRouter } from "./rndtask-router";
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.use(projectClientRouter);
 app.use(industryRouter);
 app.use(projectRouter);
 app.use(partnumberRouter);
+app.use(rndTaskRouter);
 
 export { app as router };

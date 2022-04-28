@@ -58,8 +58,8 @@ class ProjectClientRepo {
   static async findByName(name: string) {
     try {
       const result = await pool.query(
-        `SELECT id, name, code FROM project_clients WHERE name = $1;`,
-        [name]
+        `SELECT id, name, code FROM project_clients WHERE lower(name) = $1;`,
+        [name.toLowerCase()]
       );
       return result?.rows[0];
     } catch (error: any) {
