@@ -15,22 +15,28 @@ router.get("/projects/:id/tasks", requireAuth, async (req, res) => {
         tasks.map(async (x) => {
           const { serial, rndtask_clickup_id, sp, project_id } = x;
 
+          let name = "💩 task removed from ClickUp";
+          let status = "DEAD 💀";
+
           try {
-            const { status, name } = await ClickUp.getTaskNameAndStatus(
+            const response = await ClickUp.getTaskNameAndStatus(
               rndtask_clickup_id
             );
 
-            return await {
-              serial,
-              name,
-              status,
-              rndtask_clickup_id,
-              sp: encodeURI(sp),
-              project_id,
-            };
+            name = response.name;
+            status = response.status;
           } catch (error: any) {
             console.error({ error });
           }
+
+          return await {
+            serial,
+            name,
+            status,
+            rndtask_clickup_id,
+            sp: encodeURI(sp),
+            project_id,
+          };
         })
       );
     };

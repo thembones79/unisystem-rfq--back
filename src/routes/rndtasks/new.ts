@@ -34,7 +34,8 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { name, description, priority } = req.body;
+    console.log("BODY", req.body);
+    const { name, description, priority, duedate } = req.body;
     const { id } = req.params;
     const project = await ProjectRepo.findById(id);
     if (!project) {
@@ -69,6 +70,7 @@ router.post(
       name,
       description: descriptionPrefix + description,
       priority,
+      due_date: duedate,
       custom_fields: [
         {
           id: "cf77643a-c356-4f71-b582-5cfe344278b1",

@@ -19,6 +19,7 @@ interface ICreateRndTask {
   description: string;
   priority: string;
   name: string;
+  due_date?: any;
   status?: string;
   custom_fields: CustomField[];
   tags: string[];
@@ -108,6 +109,7 @@ export class ClickUp {
     description,
     priority,
     status,
+    due_date,
     custom_fields,
     tags,
   }: ICreateRndTask) {
@@ -118,6 +120,7 @@ export class ClickUp {
           name,
           description,
           priority,
+          due_date: due_date === 0 ? null : due_date,
           custom_fields,
           tags,
           status: status || "Open",

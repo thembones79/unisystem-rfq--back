@@ -32,8 +32,8 @@ class IndustryRepo {
   static async findByName(name: string) {
     try {
       const result = await pool.query(
-        `SELECT id, name FROM industries WHERE name = $1;`,
-        [name]
+        `SELECT id, name FROM industries WHERE lower(name) = $1;`,
+        [name.toLowerCase()]
       );
       return result?.rows[0];
     } catch (error: any) {
