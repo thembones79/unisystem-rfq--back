@@ -37,6 +37,9 @@ app.use(
 );
 app.use(currentUser);
 app.use("/api/v1", router);
+app.get("/", (req, res) => {
+  res.send("💩");
+});
 
 app.all("*", async () => {
   throw new NotFoundError();
