@@ -21,49 +21,71 @@ router.post(
       .notEmpty()
       .isNumeric()
       .withMessage("You must supply a min EAU"),
-    body("customer_id")
+    body("project_client_id")
       .trim()
       .notEmpty()
       .isNumeric()
       .withMessage("You must supply a CustomerId"),
-    body("distributor_id")
+    body("name")
       .trim()
       .notEmpty()
-      .isNumeric()
-      .withMessage("You must supply a DistributorId"),
+      .withMessage("You must supply a name for RFQ"),
     body("pm_id")
       .trim()
       .notEmpty()
       .isNumeric()
       .withMessage("You must supply a PmId"),
-    body("kam_id")
-      .trim()
-      .notEmpty()
-      .isNumeric()
-      .withMessage("You must supply a KamId"),
-    body("final_solutions").trim(),
-    body("conclusions").trim(),
     body("samples_expected").trim(),
     body("mp_expected").trim(),
-    body("eau_max").trim(),
-    body("extra_note").trim(),
-    body("department").trim(),
+    body("req_disp_tech").trim(),
+    body("req_disp_size").trim(),
+    body("req_disp_res").trim(),
+    body("req_disp_brigt").trim(),
+    body("req_disp_angle").trim(),
+    body("req_disp_od").trim(),
+    body("req_disp_aa").trim(),
+    body("req_disp_inter").trim(),
+    body("req_disp_ot").trim(),
+    body("req_disp_st").trim(),
+    body("req_disp_spec").trim(),
+    body("req_tp_size").trim(),
+    body("req_tp_aa").trim(),
+    body("req_tp_tech").trim(),
+    body("req_tp_od").trim(),
+    body("req_tp_inter").trim(),
+    body("req_tp_glass").trim(),
+    body("req_tp_spec").trim(),
+    body("req_others").trim(),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
     const {
       eau,
-      customer_id,
-      distributor_id,
+      project_client_id,
+      name,
       pm_id,
-      kam_id,
-      final_solutions,
-      conclusions,
       samples_expected,
       mp_expected,
-      eau_max,
-      extra_note,
-      department,
+      for_valuation,
+      req_disp_tech,
+      req_disp_size,
+      req_disp_res,
+      req_disp_brigt,
+      req_disp_angle,
+      req_disp_od,
+      req_disp_aa,
+      req_disp_inter,
+      req_disp_ot,
+      req_disp_st,
+      req_disp_spec,
+      req_tp_size,
+      req_tp_aa,
+      req_tp_tech,
+      req_tp_od,
+      req_tp_inter,
+      req_tp_glass,
+      req_tp_spec,
+      req_others,
     } = req.body;
 
     const kam = await UserRepo.findById(kam_id);
@@ -78,12 +100,8 @@ router.post(
 
     const pmEmail = pm.email as string;
 
-    let rfq_code = generateRfqCode(customer_id);
+    let rfq_code = generateNewRfqCode(project_client_id);
     let existingRfq = await RfqRepo.findByRfqCode(rfq_code);
-    while (existingRfq) {
-      rfq_code = generateRfqCode(customer_id);
-      existingRfq = await RfqRepo.findByRfqCode(rfq_code);
-    }
 
     const rfqCodeWithExtraNote = extra_note
       ? `${rfq_code} ${extra_note}`

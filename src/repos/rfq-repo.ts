@@ -10,17 +10,15 @@ class RfqRepo {
         rfq_code,
         eau,
         department,
-      COALESCE(extra_note, '') AS extra_note,
-        customers.name AS customer,
-        distributors.name AS distributor,
+        r.name AS extra_note,
+        project_clients.name AS customer,
         pm.shortname AS pm,
         kam.shortname AS kam,
         to_char(r.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM rfqs AS r
-        JOIN customers ON customers.id = r.customer_id
-        JOIN distributors ON distributors.id = r.distributor_id
+        JOIN project_clients ON project_clients.id = r.project_client_id
         JOIN users AS pm ON pm.id = r.pm_id
-        JOIN users AS kam ON kam.id = r.kam_id
+        JOIN users AS kam ON kam.id = project_clients.kam_id
         WHERE r.id != 1
         ORDER BY updated DESC;
       `);
