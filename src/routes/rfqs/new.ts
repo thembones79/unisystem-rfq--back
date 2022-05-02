@@ -7,6 +7,7 @@ import { spFileCreate } from "../../services/spFileCreate";
 import { BadRequestError } from "../../errors";
 import { RfqRepo } from "../../repos/rfq-repo";
 import { UserRepo } from "../../repos/user-repo";
+import { ProjectClientRepo } from "../../repos/project-client-repo";
 import { generateRfqCode } from "../../services/rfqNoGenerator";
 import { ClickUp } from "../../services/clickup";
 
@@ -88,37 +89,41 @@ router.post(
       req_others,
     } = req.body;
 
-    const kam = await UserRepo.findById(kam_id);
-    if (!kam) {
-      throw new BadRequestError("KAM does not exist");
-    }
-
     const pm = await UserRepo.findById(pm_id);
     if (!pm) {
       throw new BadRequestError("PM does not exist");
     }
 
+    const client = await ProjectClientRepo.findById(project_client_id);
+    if (!client) {
+      throw new BadRequestError("Client does not exist");
+    }
+
+    const clientKamRole = client.kam_role as number;
+    const department = clientKamRole === 4 ? "EX" : "PL";
+    const year = new Date().getFullYear();
+    const serial =
+      (await RfqRepo.findMaxSerialForDeptAndYear({
+        department,
+        year,
+      })) + 1;
+
     const pmEmail = pm.email as string;
 
-    let rfq_code = generateNewRfqCode(project_client_id);
-    let existingRfq = await RfqRepo.findByRfqCode(rfq_code);
-
-    const rfqCodeWithExtraNote = extra_note
-      ? `${rfq_code} ${extra_note}`
-      : rfq_code;
+    const rfq_code = `RFQ${department}/${year}/${serial}`;
 
     const clickupId = await ClickUp.createTask({
       pmEmail,
-      code: rfqCodeWithExtraNote,
+      code: rfq_code,
     });
 
     const rfq = await RfqRepo.insert({
       rfq_code,
       eau,
-      customer_id,
-      distributor_id,
+      name,
+
       pm_id,
-      kam_id,
+
       clickup_id: clickupId,
       final_solutions,
       conclusions,
@@ -130,9 +135,6 @@ router.post(
     });
 
     //  await spFileCreate({ kam: kam.shortname, rfq_code });
-
-    const pathModifier =
-      process.env.NODE_ENV === "production" ? "" : "testing/";
 
     //const spPath = `${keys.SP_DOMAIN}/sites/ProjectsManagementGroup/Shared%20Documents/RIVERDI%20PROJECTS/${pathModifier}${kam.shortname}_!PROSPECTS/${rfq_code}`;
 

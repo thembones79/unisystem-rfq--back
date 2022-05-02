@@ -85,13 +85,22 @@ class RfqRepo {
     }
   }
 
-  static async findByDistributorId(distributor_id: string) {
+  static async findMaxSerialForDeptAndYear({
+    department,
+    year,
+  }: {
+    department: string;
+    year: number;
+  }) {
     try {
       const result = await pool.query(
-        `SELECT id, rfq_code FROM rfqs WHERE distributor_id = $1;`,
-        [distributor_id]
+        `SELECT MAX(serial) FROM rfqs WHERE department = $1 AND serial = $2;`,
+        [department, year + ""]
       );
-      return result?.rows;
+
+      console.log({ max_count: result?.rows[0] });
+      const max = result?.rows[0].max;
+      return max ? parseInt(max) : 0;
     } catch (error: any) {
       throw new BadRequestError(error.message);
     }
@@ -100,7 +109,7 @@ class RfqRepo {
   static async insert({
     rfq_code,
     eau,
-    customer_id,
+    name,
     distributor_id,
     pm_id,
     kam_id,
@@ -115,7 +124,7 @@ class RfqRepo {
   }: {
     rfq_code: string;
     eau: string;
-    customer_id: string;
+    name: string;
     distributor_id: string;
     pm_id: string;
     kam_id: string;
@@ -150,7 +159,7 @@ class RfqRepo {
         [
           rfq_code,
           eau,
-          customer_id,
+          name,
           distributor_id,
           pm_id,
           kam_id,
