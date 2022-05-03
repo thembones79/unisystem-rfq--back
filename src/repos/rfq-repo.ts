@@ -94,11 +94,11 @@ class RfqRepo {
   }) {
     try {
       const result = await pool.query(
-        `SELECT MAX(serial) FROM rfqs WHERE department = $1 AND serial = $2;`,
+        `SELECT MAX(serial) FROM rfqs WHERE department = $1 AND year = $2;`,
         [department, year + ""]
       );
 
-      console.log({ max_count: result?.rows[0] });
+      console.log({ rfq_max_count: result?.rows[0] });
       const max = result?.rows[0].max;
       return max ? parseInt(max) : 0;
     } catch (error: any) {
@@ -108,69 +108,141 @@ class RfqRepo {
 
   static async insert({
     rfq_code,
-    eau,
-    name,
-    distributor_id,
-    pm_id,
-    kam_id,
     clickup_id,
-    final_solutions,
-    conclusions,
+    sp,
+    year,
+    serial,
+    department,
+    eau,
+    project_client_id,
+    name,
+    pm_id,
     samples_expected,
     mp_expected,
-    eau_max,
-    extra_note,
-    department,
+    for_valuation,
+    req_disp_tech,
+    req_disp_size,
+    req_disp_res,
+    req_disp_brigt,
+    req_disp_angle,
+    req_disp_od,
+    req_disp_aa,
+    req_disp_inter,
+    req_disp_ot,
+    req_disp_st,
+    req_disp_spec,
+    req_tp_size,
+    req_tp_aa,
+    req_tp_tech,
+    req_tp_od,
+    req_tp_inter,
+    req_tp_glass,
+    req_tp_spec,
+    req_others,
   }: {
     rfq_code: string;
-    eau: string;
-    name: string;
-    distributor_id: string;
-    pm_id: string;
-    kam_id: string;
     clickup_id: string;
-    final_solutions: string;
-    conclusions: string;
+    sp: string;
+    year: number;
+    serial: number;
+    department: string;
+    eau: string;
+    project_client_id: string;
+    name: string;
+    pm_id: string;
     samples_expected: string;
     mp_expected: string;
-    eau_max: string;
-    extra_note: string;
-    department: string;
+    for_valuation: string;
+    req_disp_tech: string;
+    req_disp_size: string;
+    req_disp_res: string;
+    req_disp_brigt: string;
+    req_disp_angle: string;
+    req_disp_od: string;
+    req_disp_aa: string;
+    req_disp_inter: string;
+    req_disp_ot: string;
+    req_disp_st: string;
+    req_disp_spec: string;
+    req_tp_size: string;
+    req_tp_aa: string;
+    req_tp_tech: string;
+    req_tp_od: string;
+    req_tp_inter: string;
+    req_tp_glass: string;
+    req_tp_spec: string;
+    req_others: string;
   }) {
     try {
       const result = await pool.query(
         `INSERT INTO rfqs (
           rfq_code,
-          eau,
-          customer_id,
-          distributor_id,
-          pm_id,
-          kam_id,
           clickup_id,
-          final_solutions,
-          conclusions,
+          sp,
+          year,
+          serial,
+          department,
+          eau,
+          project_client_id,
+          name,
+          pm_id,
           samples_expected,
           mp_expected,
-          eau_max,
-          extra_note,
-          department)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          for_valuation,
+          req_disp_tech,
+          req_disp_size,
+          req_disp_res,
+          req_disp_brigt,
+          req_disp_angle,
+          req_disp_od,
+          req_disp_aa,
+          req_disp_inter,
+          req_disp_ot,
+          req_disp_st,
+          req_disp_spec,
+          req_tp_size,
+          req_tp_aa,
+          req_tp_tech,
+          req_tp_od,
+          req_tp_inter,
+          req_tp_glass,
+          req_tp_spec,
+          req_others)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32)
           RETURNING id, rfq_code;`,
         [
           rfq_code,
-          eau,
-          name,
-          distributor_id,
-          pm_id,
-          kam_id,
           clickup_id,
-          final_solutions,
-          conclusions,
+          sp,
+          year + "",
+          serial + "",
+          department,
+          eau,
+          project_client_id,
+          name,
+          pm_id,
           samples_expected,
           mp_expected,
-          eau_max,
-          extra_note,
-          department,
+          for_valuation,
+          req_disp_tech,
+          req_disp_size,
+          req_disp_res,
+          req_disp_brigt,
+          req_disp_angle,
+          req_disp_od,
+          req_disp_aa,
+          req_disp_inter,
+          req_disp_ot,
+          req_disp_st,
+          req_disp_spec,
+          req_tp_size,
+          req_tp_aa,
+          req_tp_tech,
+          req_tp_od,
+          req_tp_inter,
+          req_tp_glass,
+          req_tp_spec,
+          req_others,
         ]
       );
       return result?.rows[0];

@@ -8,7 +8,7 @@ import { BadRequestError } from "../../errors";
 import { RfqRepo } from "../../repos/rfq-repo";
 import { UserRepo } from "../../repos/user-repo";
 import { ProjectClientRepo } from "../../repos/project-client-repo";
-import { generateRfqCode } from "../../services/rfqNoGenerator";
+import { concatZeros } from "../../services/concatZeros";
 import { ClickUp } from "../../services/clickup";
 
 const router = express.Router();
@@ -31,11 +31,6 @@ router.post(
       .trim()
       .notEmpty()
       .withMessage("You must supply a name for RFQ"),
-    body("pm_id")
-      .trim()
-      .notEmpty()
-      .isNumeric()
-      .withMessage("You must supply a PmId"),
     body("samples_expected").trim(),
     body("mp_expected").trim(),
     body("req_disp_tech").trim(),
@@ -64,7 +59,6 @@ router.post(
       eau,
       project_client_id,
       name,
-      pm_id,
       samples_expected,
       mp_expected,
       for_valuation,
@@ -89,6 +83,8 @@ router.post(
       req_others,
     } = req.body;
 
+    const pm_id = "4"; // Jacek
+
     const pm = await UserRepo.findById(pm_id);
     if (!pm) {
       throw new BadRequestError("PM does not exist");
@@ -101,6 +97,8 @@ router.post(
 
     const clientKamRole = client.kam_role as number;
     const department = clientKamRole === 4 ? "EX" : "PL";
+    const clientName = client.name;
+    const kam = client.kam_alt;
     const year = new Date().getFullYear();
     const serial =
       (await RfqRepo.findMaxSerialForDeptAndYear({
@@ -110,47 +108,72 @@ router.post(
 
     const pmEmail = pm.email as string;
 
-    const rfq_code = `RFQ${department}/${year}/${serial}`;
+    const rfq_code = `RFQ${department}/${year}/${concatZeros(serial + "", 3)}`;
 
-    const clickupId = await ClickUp.createTask({
+    const sp = await spFileCreate({
+      projectCode: rfq_code,
+      department,
+      clientName,
+      kam,
+    });
+
+    const status = for_valuation ? "to do" : "privates";
+
+    console.log({ bool: true, txt: "false", for_valuation });
+    console.log({ department, year, serial, rfq_code });
+
+    const clickup_id = await ClickUp.createTask({
       pmEmail,
-      code: rfq_code,
+      code: `[${rfq_code}] ${name}`,
+      status,
     });
 
     const rfq = await RfqRepo.insert({
       rfq_code,
+      clickup_id,
+      sp,
+      year,
+      serial,
+      department,
       eau,
+      project_client_id,
       name,
-
       pm_id,
-
-      clickup_id: clickupId,
-      final_solutions,
-      conclusions,
       samples_expected,
       mp_expected,
-      eau_max,
-      extra_note,
-      department,
+      for_valuation,
+      req_disp_tech,
+      req_disp_size,
+      req_disp_res,
+      req_disp_brigt,
+      req_disp_angle,
+      req_disp_od,
+      req_disp_aa,
+      req_disp_inter,
+      req_disp_ot,
+      req_disp_st,
+      req_disp_spec,
+      req_tp_size,
+      req_tp_aa,
+      req_tp_tech,
+      req_tp_od,
+      req_tp_inter,
+      req_tp_glass,
+      req_tp_spec,
+      req_others,
     });
-
-    //  await spFileCreate({ kam: kam.shortname, rfq_code });
-
-    //const spPath = `${keys.SP_DOMAIN}/sites/ProjectsManagementGroup/Shared%20Documents/RIVERDI%20PROJECTS/${pathModifier}${kam.shortname}_!PROSPECTS/${rfq_code}`;
-
-    const spPath = `Go to the app:`;
 
     const appPath = `${keys.CLIENT_ORIGIN}/rfqs/${rfq.id}`;
 
     const description = `
 
-${spPath}
+${sp}
 
 ${appPath}
 
     `;
 
-    await ClickUp.updateDescription({ taskId: clickupId, description });
+    await ClickUp.updateDescription({ taskId: clickup_id, description });
 
     res.status(201).send(rfq);
   }
