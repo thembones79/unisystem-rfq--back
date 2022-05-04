@@ -38,31 +38,48 @@ class RfqRepo {
               eau,
               r.department AS department,
               r.clickup_id AS clickup_id,
-              customer_id,
-              customers.name AS customer,
-              distributor_id,
-              distributors.name AS distributor,
+              r.name AS extra_note,
+              sp,
+              year,
+              serial,
+              project_clients.name AS customer,
+              for_valuation,
+              req_disp_tech,
+              req_disp_size,
+              req_disp_res,
+              req_disp_brigt,
+              req_disp_angle,
+              req_disp_od,
+              req_disp_aa,
+              req_disp_inter,
+              req_disp_ot,
+              req_disp_st,
+              req_disp_spec,
+              req_tp_size,
+              req_tp_aa,
+              req_tp_tech,
+              req_tp_od,
+              req_tp_inter,
+              req_tp_glass,
+              req_tp_spec,
+              req_others,
               r.pm_id AS pm_id,
               projects.id AS project_id,
               projects.project_code AS project_code,
               pm.shortname AS pm,
               pm.username AS pm_fullname,
-              r.kam_id AS kam_id,
+              project_clients.kam_id AS kam_id,
               kam.shortname AS kam,
               kam.username AS kam_fullname,
-              extra_note,
               final_solutions,
-              conclusions,
               samples_expected,
               mp_expected,
-              eau_max,
               to_char(r.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
               FROM rfqs AS r
-              JOIN customers ON customers.id = r.customer_id
               FULL OUTER JOIN projects ON projects.rfq_id = r.id
-              JOIN distributors ON distributors.id = r.distributor_id
+              JOIN project_clients ON project_clients.id = r.project_client_id
               JOIN users AS pm ON pm.id = r.pm_id
-              JOIN users AS kam ON kam.id = r.kam_id
+              JOIN users AS kam ON kam.id = project_clients.kam_id
         WHERE r.id = $1
         `,
         [id]
@@ -254,64 +271,120 @@ class RfqRepo {
   static async updateData({
     id,
     eau,
-    customer_id,
-    distributor_id,
     pm_id,
-    kam_id,
-    final_solutions,
-    conclusions,
+    name,
     samples_expected,
     mp_expected,
-    eau_max,
-    extra_note,
-    department,
+    for_valuation,
+    req_disp_tech,
+    req_disp_size,
+    req_disp_res,
+    req_disp_brigt,
+    req_disp_angle,
+    req_disp_od,
+    req_disp_aa,
+    req_disp_inter,
+    req_disp_ot,
+    req_disp_st,
+    req_disp_spec,
+    req_tp_size,
+    req_tp_aa,
+    req_tp_tech,
+    req_tp_od,
+    req_tp_inter,
+    req_tp_glass,
+    req_tp_spec,
+    req_others,
+    final_solutions,
   }: {
     id: string;
     eau: string;
-    customer_id: string;
-    distributor_id: string;
     pm_id: string;
-    kam_id: string;
-    final_solutions: string;
-    conclusions: string;
+    name: string;
     samples_expected: string;
     mp_expected: string;
-    eau_max: string;
-    extra_note: string;
-    department: string;
+    for_valuation: string;
+    req_disp_tech: string;
+    req_disp_size: string;
+    req_disp_res: string;
+    req_disp_brigt: string;
+    req_disp_angle: string;
+    req_disp_od: string;
+    req_disp_aa: string;
+    req_disp_inter: string;
+    req_disp_ot: string;
+    req_disp_st: string;
+    req_disp_spec: string;
+    req_tp_size: string;
+    req_tp_aa: string;
+    req_tp_tech: string;
+    req_tp_od: string;
+    req_tp_inter: string;
+    req_tp_glass: string;
+    req_tp_spec: string;
+    req_others: string;
+    final_solutions: string;
   }) {
     try {
       const result = await pool.query(
         `UPDATE rfqs SET
           eau = $2,
-          customer_id = $3,
-          distributor_id = $4,
-          pm_id = $5,
-          kam_id = $6,
-          final_solutions = $7,
-          conclusions = $8,
-          samples_expected = $9,
-          mp_expected = $10,
-          eau_max = $11,
-          extra_note = $12,
-          department = $13,
+          pm_id = $3,
+          name = $4,
+          samples_expected = $5,
+          mp_expected = $6,
+          for_valuation = $7,
+          req_disp_tech = $8,
+          req_disp_size = $9,
+          req_disp_res = $10,
+          req_disp_brigt = $11,
+          req_disp_angle = $12,
+          req_disp_od = $13,
+          req_disp_aa = $14,
+          req_disp_inter = $15,
+          req_disp_ot = $16,
+          req_disp_st = $17,
+          req_disp_spec = $18,
+          req_tp_size = $19,
+          req_tp_aa = $20,
+          req_tp_tech = $21,
+          req_tp_od = $22,
+          req_tp_inter = $23,
+          req_tp_glass = $24,
+          req_tp_spec = $25,
+          req_others = $26,
+          final_solutions = $27,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, rfq_code;`,
         [
           id,
           eau,
-          customer_id,
-          distributor_id,
           pm_id,
-          kam_id,
-          final_solutions,
-          conclusions,
+          name,
           samples_expected,
           mp_expected,
-          eau_max,
-          extra_note,
-          department,
+          for_valuation,
+          req_disp_tech,
+          req_disp_size,
+          req_disp_res,
+          req_disp_brigt,
+          req_disp_angle,
+          req_disp_od,
+          req_disp_aa,
+          req_disp_inter,
+          req_disp_ot,
+          req_disp_st,
+          req_disp_spec,
+          req_tp_size,
+          req_tp_aa,
+          req_tp_tech,
+          req_tp_od,
+          req_tp_inter,
+          req_tp_glass,
+          req_tp_spec,
+          req_others,
+          final_solutions,
         ]
       );
       return result?.rows[0];

@@ -30,6 +30,11 @@ interface IUpdateDescription {
   description: string;
 }
 
+interface IUpdateStatus {
+  taskId: string;
+  status: string;
+}
+
 interface ITeamMember {
   id: number;
   email: string;
@@ -181,6 +186,25 @@ export class ClickUp {
         `https://api.clickup.com/api/v2/task/${taskId}`,
         {
           description,
+        },
+        {
+          headers: { Authorization: keys.CLICKUP_API_SECRET },
+        }
+      );
+
+      return response.data.id;
+    } catch (e: any) {
+      console.warn(e);
+      throw new BadRequestError(e.response.data.error);
+    }
+  }
+
+  static async updateStatus({ taskId, status }: IUpdateStatus) {
+    try {
+      const response = await axios.put(
+        `https://api.clickup.com/api/v2/task/${taskId}`,
+        {
+          status,
         },
         {
           headers: { Authorization: keys.CLICKUP_API_SECRET },

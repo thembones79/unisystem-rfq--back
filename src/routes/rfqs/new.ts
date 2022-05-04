@@ -21,7 +21,7 @@ router.post(
       .trim()
       .notEmpty()
       .isNumeric()
-      .withMessage("You must supply a min EAU"),
+      .withMessage("You must supply a EAU"),
     body("project_client_id")
       .trim()
       .notEmpty()
@@ -131,7 +131,7 @@ router.post(
     const rfq = await RfqRepo.insert({
       rfq_code,
       clickup_id,
-      sp,
+      sp: encodeURI(sp),
       year,
       serial,
       department,
