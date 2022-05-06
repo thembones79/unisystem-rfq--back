@@ -10,6 +10,7 @@ class RfqRepo {
         rfq_code,
         eau,
         department,
+        for_valuation::VARCHAR,
         r.name AS extra_note,
         project_clients.name AS customer,
         pm.shortname AS pm,
