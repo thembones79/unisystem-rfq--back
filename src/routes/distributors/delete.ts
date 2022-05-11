@@ -15,13 +15,6 @@ router.delete("/distributors/:id", requireAuth, async (req, res) => {
     throw new BadRequestError("Distributor does not exists");
   }
 
-  const rfqs = await RfqRepo.findByDistributorId(id);
-  if (rfqs && rfqs.length > 0) {
-    throw new BadRequestError(
-      "Distributor has RFQs. Delete RFQs first or attach them to another distributor."
-    );
-  }
-
   const deletedDistributor = await DistributorRepo.delete(id);
   res.send(deletedDistributor);
 });
