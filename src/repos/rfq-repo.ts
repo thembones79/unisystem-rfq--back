@@ -39,7 +39,7 @@ class RfqRepo {
               eau,
               r.department AS department,
               r.clickup_id AS clickup_id,
-              r.name AS extra_note,
+              r.name AS name,
               sp,
               year,
               serial,

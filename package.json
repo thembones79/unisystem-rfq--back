@@ -1,6 +1,6 @@
 {
   "name": "unisystem-rfq--backend",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Backend written in Node.js, Typescript for Unisystem RFQ system",
   "main": "index.js",
   "engines": {
