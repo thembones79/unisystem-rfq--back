@@ -13,6 +13,7 @@ class RfqRepo {
         for_valuation::VARCHAR,
         r.name AS extra_note,
         project_clients.name AS customer,
+        kam.id AS kam_id,
         pm.shortname AS pm,
         kam.shortname AS kam,
         to_char(r.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
@@ -23,6 +24,37 @@ class RfqRepo {
         WHERE r.id != 1
         ORDER BY updated DESC;
       `);
+      return result?.rows;
+    } catch (error: any) {
+      throw new BadRequestError(error.message);
+    }
+  }
+
+  static async findByKamId(kamId: string) {
+    try {
+      const result = await pool.query(
+        `
+      SELECT
+        r.id,
+        rfq_code,
+        eau,
+        department,
+        for_valuation::VARCHAR,
+        r.name AS extra_note,
+        project_clients.name AS customer,
+        kam.id AS kam_id,
+        pm.shortname AS pm,
+        kam.shortname AS kam,
+        to_char(r.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
+        FROM rfqs AS r
+        JOIN project_clients ON project_clients.id = r.project_client_id
+        JOIN users AS pm ON pm.id = r.pm_id
+        JOIN users AS kam ON kam.id = project_clients.kam_id
+        WHERE r.id != 1 AND kam.id = $1
+        ORDER BY updated DESC;
+      `,
+        [kamId]
+      );
       return result?.rows;
     } catch (error: any) {
       throw new BadRequestError(error.message);
