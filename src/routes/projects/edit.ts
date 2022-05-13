@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 
-import { validateRequest, requireAuth } from "../../middlewares";
+import { validateRequest, requireAuth, blockKams } from "../../middlewares";
 import { BadRequestError } from "../../errors";
 import { ProjectRepo } from "../../repos/project-repo";
 
@@ -10,6 +10,7 @@ const router = express.Router();
 router.put(
   "/projects/:id",
   requireAuth,
+  blockKams,
   [
     body("pm_id")
       .trim()

@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
-
+import { getAllowedData } from "../../services/getAllowedData";
 import { validateRequest, requireAuth } from "../../middlewares";
-import { BadRequestError } from "../../errors";
+import { BadRequestError, NotAuthorizedError } from "../../errors";
 import { RfqRepo } from "../../repos/rfq-repo";
 import { ClickUp } from "../../services/clickup";
 
@@ -80,6 +80,13 @@ router.put(
       final_solutions,
     } = req.body;
     const { id } = req.params;
+
+    const currentUsersRfqs = await getAllowedData(req, RfqRepo);
+
+    if (!currentUsersRfqs?.find((x: any) => x.id === id)) {
+      throw new NotAuthorizedError();
+    }
+
     if (id === "1") {
       throw new BadRequestError(`This is "SPECIAL" RFQ - you cannot edit it!`);
     }

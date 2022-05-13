@@ -2,6 +2,7 @@ import express from "express";
 import { requireAuth } from "../../middlewares";
 import { RfqRepo } from "../../repos/rfq-repo";
 import { NotFoundError, BadRequestError } from "../../errors";
+import { checkPermissions } from "../../services/checkPermissions";
 import { ClickUp } from "../../services/clickup";
 
 const router = express.Router();
@@ -18,6 +19,8 @@ router.get("/rfqs/:id", requireAuth, async (req, res) => {
   if (!rfq) {
     throw new NotFoundError();
   }
+
+  await checkPermissions(req, RfqRepo, id);
 
   let status = "task not found";
 

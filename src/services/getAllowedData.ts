@@ -1,16 +1,16 @@
 import { Request } from "express";
 import { UserPayload } from "../middlewares/current-user";
 
-interface ReqWithUser extends Request {
+export interface ReqWithUser extends Request {
   currentUser?: UserPayload;
 }
 
-interface IRepo {
+export interface IRepo {
   find: () => Promise<any[] | undefined>;
   findByKamId: (kamId: string) => Promise<any[] | undefined>;
 }
 
-export const listData = async (req: ReqWithUser, repo: IRepo) => {
+export const getAllowedData = async (req: ReqWithUser, repo: IRepo) => {
   const { currentUser } = req;
 
   if (!currentUser) return [];
