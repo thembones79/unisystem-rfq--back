@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import { getAllowedData } from "../../services/getAllowedData";
 import { validateRequest, requireAuth } from "../../middlewares";
 import { BadRequestError, NotAuthorizedError } from "../../errors";
+import { checkPermissions } from "../../services/checkPermissions";
 import { RfqRepo } from "../../repos/rfq-repo";
 import { ClickUp } from "../../services/clickup";
 
@@ -81,19 +82,15 @@ router.put(
     } = req.body;
     const { id } = req.params;
 
-    const currentUsersRfqs = await getAllowedData(req, RfqRepo);
-
-    if (!currentUsersRfqs?.find((x: any) => x.id === id)) {
-      throw new NotAuthorizedError();
-    }
-
-    if (id === "1") {
-      throw new BadRequestError(`This is "SPECIAL" RFQ - you cannot edit it!`);
-    }
-
     const existingRfq = await RfqRepo.findById(id);
     if (!existingRfq) {
       throw new BadRequestError("RFQ does not exist");
+    }
+
+    await checkPermissions(req, RfqRepo, id);
+
+    if (id === "1") {
+      throw new BadRequestError(`This is "SPECIAL" RFQ - you cannot edit it!`);
     }
 
     const rfq = await RfqRepo.updateData({

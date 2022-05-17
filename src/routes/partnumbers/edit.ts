@@ -3,6 +3,7 @@ import { body } from "express-validator";
 
 import { validateRequest, requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
+import { checkPermissions } from "../../services/checkPermissions";
 import { PartnumberRepo } from "../../repos/partnumber-repo";
 
 const router = express.Router();
@@ -20,6 +21,8 @@ router.put(
     if (!existingPn) {
       throw new BadRequestError("Partnumber does not exist");
     }
+
+    await checkPermissions(req, PartnumberRepo, id);
 
     const updatedPartnumber = await PartnumberRepo.updateData({
       id,

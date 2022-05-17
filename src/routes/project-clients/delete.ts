@@ -3,6 +3,7 @@ import express from "express";
 import { requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
 import { ProjectClientRepo } from "../../repos/project-client-repo";
+import { checkPermissions } from "../../services/checkPermissions";
 import { ProjectRepo } from "../../repos/project-repo";
 
 const router = express.Router();
@@ -14,6 +15,8 @@ router.delete("/clients/:id", requireAuth, async (req, res) => {
   if (!existingClient) {
     throw new BadRequestError("Client does not exist");
   }
+
+  await checkPermissions(req, ProjectClientRepo, id);
 
   const projects = await ProjectRepo.findByClientId(id);
   if (projects && projects.length > 0) {

@@ -9,11 +9,35 @@ class ProjectClientRepo {
       project_clients.id AS id,
       name,
       code,
+      kam.id AS kam_id,
       kam.shortname AS kam
       FROM project_clients
       JOIN users AS kam ON kam.id = project_clients.kam_id
       ORDER BY name;
       `);
+      return result?.rows;
+    } catch (error: any) {
+      throw new BadRequestError(error.message);
+    }
+  }
+
+  static async findByKamId(kamId: string) {
+    try {
+      const result = await pool.query(
+        `
+      SELECT
+      project_clients.id AS id,
+      name,
+      code,
+      kam.id AS kam_id,
+      kam.shortname AS kam
+      FROM project_clients
+      JOIN users AS kam ON kam.id = project_clients.kam_id
+      WHERE kam.id = $1
+      ORDER BY name;
+      `,
+        [kamId]
+      );
       return result?.rows;
     } catch (error: any) {
       throw new BadRequestError(error.message);

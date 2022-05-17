@@ -17,6 +17,36 @@ class UserRepo {
       throw new BadRequestError(error.message);
     }
   }
+  static async findPms() {
+    try {
+      const result = await pool.query(
+        `
+        SELECT id, username, username AS name, email, shortname, role_id, shortname_alt
+        FROM users
+        WHERE role_id = 2 AND deleted = false
+        ORDER BY username;
+        `
+      );
+      return result?.rows;
+    } catch (error: any) {
+      throw new BadRequestError(error.message);
+    }
+  }
+  static async findKams() {
+    try {
+      const result = await pool.query(
+        `
+        SELECT id, username, username AS name, email, shortname, role_id, shortname_alt
+        FROM users
+        WHERE role_id > 2 AND deleted = false
+        ORDER BY username;
+        `
+      );
+      return result?.rows;
+    } catch (error: any) {
+      throw new BadRequestError(error.message);
+    }
+  }
 
   static async findWithAdmins() {
     try {

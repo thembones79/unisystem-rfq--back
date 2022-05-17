@@ -9,3 +9,5 @@ export * from "./change-password";
 export * from "./all-users-with-admins";
 export * from "./disable-user";
 export * from "./enable-user";
+export * from "./all-pms";
+export * from "./all-kams";
