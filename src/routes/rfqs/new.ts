@@ -119,9 +119,6 @@ router.post(
 
     const status = for_valuation ? "to do" : "privates";
 
-    console.log({ bool: true, txt: "false", for_valuation });
-    console.log({ department, year, serial, rfq_code });
-
     const clickup_id = await ClickUp.createTask({
       pmEmail,
       code: `[${rfq_code}] ${name}`,

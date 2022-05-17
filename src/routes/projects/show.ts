@@ -2,6 +2,7 @@ import express from "express";
 import { requireAuth } from "../../middlewares";
 import { ProjectRepo } from "../../repos/project-repo";
 import { ClickUp } from "../../services/clickup";
+import { checkPermissions } from "../../services/checkPermissions";
 import { NotFoundError } from "../../errors";
 
 const router = express.Router();
@@ -13,6 +14,8 @@ router.get("/projects/:id", requireAuth, async (req, res) => {
   if (!project) {
     throw new NotFoundError();
   }
+
+  await checkPermissions(req, ProjectRepo, id);
 
   let status = "task not found";
 

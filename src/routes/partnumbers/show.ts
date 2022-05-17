@@ -1,6 +1,7 @@
 import express from "express";
 import { requireAuth } from "../../middlewares";
 import { PartnumberRepo } from "../../repos/partnumber-repo";
+import { checkPermissions } from "../../services/checkPermissions";
 import { NotFoundError } from "../../errors";
 
 const router = express.Router();
@@ -12,6 +13,8 @@ router.get("/partnumbers/:id", requireAuth, async (req, res) => {
   if (!partnumber) {
     throw new NotFoundError();
   }
+
+  await checkPermissions(req, PartnumberRepo, id);
 
   res.send(partnumber);
 });

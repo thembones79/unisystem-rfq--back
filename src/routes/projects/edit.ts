@@ -1,8 +1,9 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 
-import { validateRequest, requireAuth } from "../../middlewares";
+import { validateRequest, requireAuth, blockKams } from "../../middlewares";
 import { BadRequestError } from "../../errors";
+import { checkPermissions } from "../../services/checkPermissions";
 import { ProjectRepo } from "../../repos/project-repo";
 
 const router = express.Router();
@@ -10,6 +11,7 @@ const router = express.Router();
 router.put(
   "/projects/:id",
   requireAuth,
+  blockKams,
   [
     body("pm_id")
       .trim()
@@ -29,6 +31,8 @@ router.put(
     if (!existingProject) {
       throw new BadRequestError("Project does not exist");
     }
+
+    await checkPermissions(req, ProjectRepo, id);
 
     const updatedProject = await ProjectRepo.updateData({
       id,

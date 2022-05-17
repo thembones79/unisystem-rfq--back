@@ -2,6 +2,7 @@ import express from "express";
 
 import { requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
+import { checkPermissions } from "../../services/checkPermissions";
 import { RfqRepo } from "../../repos/rfq-repo";
 
 const router = express.Router();
@@ -13,6 +14,8 @@ router.delete("/rfqs/:id", requireAuth, async (req, res) => {
   if (!existingRfq) {
     throw new BadRequestError("RFQ does not exists");
   }
+
+  await checkPermissions(req, RfqRepo, id);
 
   const rfq = await RfqRepo.delete(id);
   res.send(rfq);

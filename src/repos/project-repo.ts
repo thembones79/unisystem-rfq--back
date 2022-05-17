@@ -13,6 +13,7 @@ class ProjectRepo {
         industries.name AS industry,
         pm.shortname AS pm,
         kam.shortname AS kam,
+        kam.id AS kam_id,
         to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM projects AS p
         JOIN project_clients ON project_clients.id = p.project_client_id
@@ -21,6 +22,36 @@ class ProjectRepo {
         JOIN users AS kam ON kam.id = project_clients.kam_id
         ORDER BY updated DESC;
       `);
+      return result?.rows;
+    } catch (error: any) {
+      throw new BadRequestError(error.message);
+    }
+  }
+
+  static async findByKamId(kamId: string) {
+    try {
+      const result = await pool.query(
+        `
+      SELECT
+        p.id,
+        project_code,
+        department,
+        project_clients.name AS client,
+        industries.name AS industry,
+        pm.shortname AS pm,
+        kam.shortname AS kam,
+        kam.id AS kam_id,
+        to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
+        FROM projects AS p
+        JOIN project_clients ON project_clients.id = p.project_client_id
+        JOIN industries ON industries.id = p.industry_id
+        JOIN users AS pm ON pm.id = p.pm_id
+        JOIN users AS kam ON kam.id = project_clients.kam_id
+        WHERE kam.id = $1
+        ORDER BY updated DESC;
+      `,
+        [kamId]
+      );
       return result?.rows;
     } catch (error: any) {
       throw new BadRequestError(error.message);

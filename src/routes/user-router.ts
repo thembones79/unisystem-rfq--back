@@ -6,6 +6,8 @@ import {
   logoutRouter,
   currentUserRouter,
   allUsersRouter,
+  allKamsRouter,
+  allPmsRouter,
   showUserRouter,
   editUserRouter,
   changePasswordRouter,
@@ -27,5 +29,7 @@ app.use(changePasswordRouter);
 app.use(usersAndAdminsRouter);
 app.use(disableUserRouter);
 app.use(enableUserRouter);
+app.use(allKamsRouter);
+app.use(allPmsRouter);
 
 export { app as userRouter };

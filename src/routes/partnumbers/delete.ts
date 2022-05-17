@@ -2,6 +2,7 @@ import express from "express";
 
 import { requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
+import { checkPermissions } from "../../services/checkPermissions";
 import { PartnumberRepo } from "../../repos/partnumber-repo";
 
 const router = express.Router();
@@ -13,6 +14,8 @@ router.delete("/partnumbers/:id", requireAuth, async (req, res) => {
   if (!existingPartnumber) {
     throw new BadRequestError(" does not exist");
   }
+
+  await checkPermissions(req, PartnumberRepo, id);
 
   const deletedPartnumber = await PartnumberRepo.delete(id);
   res.send(deletedPartnumber);

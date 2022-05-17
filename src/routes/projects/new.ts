@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { spFileCreate } from "../../services/spFileCreate";
 import { ClickUp } from "../../services/clickup";
-import { validateRequest, requireAuth } from "../../middlewares";
+import { validateRequest, requireAuth, blockKams } from "../../middlewares";
 import { ProjectRepo } from "../../repos/project-repo";
 import { ProjectClientRepo } from "../../repos/project-client-repo";
 import { concatZeros } from "../../services/concatZeros";
@@ -20,6 +20,7 @@ const newProjectCode = async (clientCode: string) => {
 router.post(
   "/projects",
   requireAuth,
+  blockKams,
   [
     body("project_client_id")
       .trim()

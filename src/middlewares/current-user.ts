@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { keys } from "../config/keys";
 
-interface UserPayload {
+export interface UserPayload {
   id: string;
   email: string;
   username: string;

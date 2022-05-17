@@ -34,7 +34,6 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    console.log("BODY", req.body);
     const { name, description, priority, duedate } = req.body;
     const { id } = req.params;
     const project = await ProjectRepo.findById(id);
