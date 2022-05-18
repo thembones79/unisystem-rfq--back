@@ -9,6 +9,7 @@ import { industryRouter } from "./industry-router";
 import { projectRouter } from "./project-router";
 import { partnumberRouter } from "./partnumber-router";
 import { rndTaskRouter } from "./rndtask-router";
+import { webhookRouter } from "./webhook-router";
 
 const app = express();
 
@@ -22,5 +23,6 @@ app.use(industryRouter);
 app.use(projectRouter);
 app.use(partnumberRouter);
 app.use(rndTaskRouter);
+app.use(webhookRouter);
 
 export { app as router };
