@@ -74,6 +74,7 @@ class ProjectRepo {
           kam.shortname_alt AS kam_folder,
           pm.username AS pm_fullname,
           kam.username AS kam_fullname,
+          p.project_client_id AS project_client_id,
           rfq_id,
           p.pm_id,
           rfqs.rfq_code AS rfq,

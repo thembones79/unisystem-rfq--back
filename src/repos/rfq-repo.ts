@@ -41,6 +41,7 @@ class RfqRepo {
         department,
         for_valuation::VARCHAR,
         r.name AS extra_note,
+        r.project_client_id AS project_client_id,
         project_clients.name AS customer,
         kam.id AS kam_id,
         pm.shortname AS pm,
