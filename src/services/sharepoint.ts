@@ -2,12 +2,9 @@ import * as pnp from "@pnp/sp";
 import { PnpNode, IPnpNodeSettings } from "sp-pnp-node";
 import { keys } from "../config/keys";
 
-const SP_SITE = "/sites/RocknDevelopment";
-const COPY_SOURCE =
-  "/Shared Documents/RD - Department Documentation/RD000 - RnD Document template/OPEN/RD000D1/Catalog structure for 2022";
-const src = `${SP_SITE}${COPY_SOURCE}`;
-const DESTINATION_PATH = "/Shared Documents/UC - Unisystem Custom/";
-const dest = `${SP_SITE}${DESTINATION_PATH}`;
+const SP_SITE = "/sites/Unisystem-oglne";
+
+const src = `${SP_SITE}/Shared Documents/SZJ/PM/!Drzewo katalogów [NIE USUWAĆ!!]`;
 
 const config = {
   siteUrl: `${keys.SP_DOMAIN}${SP_SITE}`,
@@ -34,7 +31,7 @@ export class Sharepoint {
         });
       } catch (error: any) {
         console.error({ SHAREPOINT_ERROR: error });
-        return "dupa";
+        return "init error";
       }
     };
     init();
@@ -42,7 +39,7 @@ export class Sharepoint {
 
   async isFolderExist(folder: string) {
     try {
-      await pnp.sp.web.getFolderByServerRelativePath(`${dest}${folder}`).get();
+      await pnp.sp.web.getFolderByServerRelativePath(`${folder}`).get();
     } catch (error: any) {
       return false;
     }
@@ -53,16 +50,14 @@ export class Sharepoint {
   async copyTO(to: string) {
     try {
       if (await this.isFolderExist(to)) {
-        return "kupa";
+        return "folder exists";
       }
-      await pnp.sp.web
-        .getFolderByServerRelativePath(src)
-        .copyTo(`${dest}${to}`);
+      await pnp.sp.web.getFolderByServerRelativePath(src).copyTo(`${to}`);
     } catch (error: any) {
       console.error({ SP_ERROR: error });
-      return "lupa";
+      return "sharepoint error";
     }
 
-    return "zupa";
+    return "ok";
   }
 }

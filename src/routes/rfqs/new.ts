@@ -111,7 +111,7 @@ router.post(
     const rfq_code = `RFQ${department}/${year}/${concatZeros(serial + "", 3)}`;
 
     const sp = await spFileCreate({
-      projectCode: rfq_code,
+      projectCode: `!${rfq_code}`,
       department,
       clientName,
       kam,

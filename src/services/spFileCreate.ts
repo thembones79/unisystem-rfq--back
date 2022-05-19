@@ -3,7 +3,7 @@ import { keys } from "../config/keys";
 
 import { BadRequestError } from "../errors";
 
-interface IspPath {
+export interface IspPath {
   department: string;
   clientName: string;
   kam: string;
@@ -19,7 +19,7 @@ const creds = {
   domain: keys.SP_DOMAIN,
 };
 
-const spPath = ({ department, clientName, kam }: IspPath) => {
+export const spPath = ({ department, clientName, kam }: IspPath) => {
   if (department === "EX") {
     return {
       urlPath: `${creds.domain}/sites/SalesEX`,

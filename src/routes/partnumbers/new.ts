@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 
 import { validateRequest, requireAuth } from "../../middlewares";
+import { buildSpProjectPath } from "../../services/buildSpProjectPath";
 import { Sharepoint } from "../../services/sharepoint";
 import { PartnumberRepo } from "../../repos/partnumber-repo";
 import { ProjectRepo } from "../../repos/project-repo";
@@ -15,31 +16,60 @@ interface IGeneratePartnumber {
   display: string;
   touch: string;
   mechanics: string;
-  thirdPartyPn: string;
+  startCount?: number;
 }
 
-const generatePartnumber = async ({
+const generatePartnumber = ({
   projectCode,
   size,
   display,
   touch,
   mechanics,
-  thirdPartyPn,
 }: IGeneratePartnumber) =>
-  thirdPartyPn || `UC${size}${display}${touch}${mechanics}-${projectCode}`;
+  `UC${size}${display}${touch}${mechanics}-${projectCode}V`;
+
+const generateVersionedPartnumber = async ({
+  projectCode,
+  size,
+  display,
+  touch,
+  mechanics,
+  startCount,
+}: IGeneratePartnumber): Promise<string> => {
+  const count = startCount || 1;
+
+  const partnumber =
+    generatePartnumber({
+      projectCode,
+      size,
+      display,
+      touch,
+      mechanics,
+    }) + count;
+
+  const existingPn = await PartnumberRepo.findByPartnumber(partnumber);
+  if (existingPn) {
+    return await generateVersionedPartnumber({
+      projectCode,
+      size,
+      display,
+      touch,
+      mechanics,
+      startCount: count + 1,
+    });
+  }
+
+  return partnumber;
+};
 
 router.post(
   "/partnumbers",
   requireAuth,
   [
-    body("project_id")
-      .trim()
-      .notEmpty()
-      .isNumeric()
-      .withMessage("You must supply a ProjectId"),
-    body("size").trim().notEmpty().withMessage("You must supply a size"),
-    body("display").trim().notEmpty().withMessage("You must supply a display"),
-    body("touch").trim().notEmpty().withMessage("You must supply a touch"),
+    body("project_id").trim(),
+    body("size").trim(),
+    body("display").trim(),
+    body("touch").trim(),
     body("mechanics").trim(),
     body("note").trim(),
     body("third_party_pn").trim(),
@@ -61,16 +91,19 @@ router.post(
       throw new BadRequestError("Project does not exist");
     }
 
+    const spProjectPath = buildSpProjectPath(existingProject);
     const projectCode = existingProject.project_code;
-
-    const pn = await generatePartnumber({
-      projectCode,
-      size,
-      display,
-      touch,
-      mechanics,
-      thirdPartyPn: third_party_pn,
-    });
+    const thirdPartyPn =
+      third_party_pn && `${third_party_pn} (for ${projectCode})`;
+    const pn =
+      thirdPartyPn ||
+      (await generateVersionedPartnumber({
+        projectCode,
+        size,
+        display,
+        touch,
+        mechanics,
+      }));
 
     const existingPn = await PartnumberRepo.findByPartnumber(pn);
     if (existingPn) {
@@ -78,8 +111,10 @@ router.post(
     }
 
     const sharepoint = new Sharepoint();
-    const sharepointResponse = await sharepoint.copyTO("folderName");
-    console.log(sharepointResponse);
+
+    const sharepointResponse = await sharepoint.copyTO(
+      `${spProjectPath}/${pn}`
+    );
 
     const version = "";
     const revision = "";
