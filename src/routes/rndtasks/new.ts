@@ -46,7 +46,7 @@ router.post(
     const { project_code, clickup_id, kam_folder, client, department } =
       project;
 
-    const rndTaskFolder = `${project_code}/RND.TASK.${concatZeros(serial, 2)}`;
+    const rndTaskFolder = `${project_code}/!RND.TASK.${concatZeros(serial, 2)}`;
 
     const sp = await spFileCreate({
       projectCode: rndTaskFolder,

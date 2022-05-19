@@ -1,13 +1,13 @@
 import express from "express";
 
-import { requireAuth } from "../../middlewares";
+import { blockKams, requireAuth } from "../../middlewares";
 import { BadRequestError } from "../../errors";
 import { checkPermissions } from "../../services/checkPermissions";
 import { PartnumberRepo } from "../../repos/partnumber-repo";
 
 const router = express.Router();
 
-router.delete("/partnumbers/:id", requireAuth, async (req, res) => {
+router.delete("/partnumbers/:id", requireAuth, blockKams, async (req, res) => {
   const { id } = req.params;
 
   const existingPartnumber = await PartnumberRepo.findById(id);

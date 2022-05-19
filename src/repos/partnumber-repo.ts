@@ -42,6 +42,7 @@ class PartnumberRepo {
       industries.name AS industry,
       pm.shortname AS pm,
       kam.shortname AS kam,
+      kam.shortname_alt AS kam_folder,
       kam.id AS kam_id,
       to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
       FROM partnumbers AS p
@@ -77,6 +78,7 @@ class PartnumberRepo {
         kam.username AS kam_fullname,
         pm.shortname AS pm,
         kam.shortname AS kam,
+        kam.shortname_alt AS kam_folder,
         p.version AS version,
         p.revision AS revision,
         p.note AS note,

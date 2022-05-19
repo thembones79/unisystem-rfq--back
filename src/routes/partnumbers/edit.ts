@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 
-import { validateRequest, requireAuth } from "../../middlewares";
+import { validateRequest, requireAuth, blockKams } from "../../middlewares";
 import { BadRequestError } from "../../errors";
 import { checkPermissions } from "../../services/checkPermissions";
 import { PartnumberRepo } from "../../repos/partnumber-repo";
@@ -11,7 +11,8 @@ const router = express.Router();
 router.put(
   "/partnumbers/:id",
   requireAuth,
-  [body("note").trim(), body("version").trim(), body("revision").trim()],
+  blockKams,
+  [(body("note").trim(), body("version").trim(), body("revision").trim())],
   validateRequest,
   async (req: Request, res: Response) => {
     const { note, version, revision } = req.body;
