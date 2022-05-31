@@ -72,6 +72,7 @@ class RfqRepo {
               eau,
               r.department AS department,
               r.clickup_id AS clickup_id,
+              r.project_client_id AS project_client_id,
               r.name AS name,
               sp,
               year,
