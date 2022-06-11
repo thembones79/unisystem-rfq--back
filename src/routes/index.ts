@@ -10,6 +10,7 @@ import { projectRouter } from "./project-router";
 import { partnumberRouter } from "./partnumber-router";
 import { rndTaskRouter } from "./rndtask-router";
 import { webhookRouter } from "./webhook-router";
+import { erpxlProductRouter } from "./erpxl-product-router";
 
 const app = express();
 
@@ -24,5 +25,6 @@ app.use(projectRouter);
 app.use(partnumberRouter);
 app.use(rndTaskRouter);
 app.use(webhookRouter);
+app.use(erpxlProductRouter);
 
 export { app as router };
