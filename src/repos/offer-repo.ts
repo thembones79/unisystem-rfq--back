@@ -102,67 +102,51 @@ class OfferRepo {
     }
   }
 
-  static async findByClientId(project_client_id: string) {
+  static async findMaxSerialForYearMonthKam(year_month_kam: string) {
     try {
       const result = await pool.query(
-        `SELECT id, project_code FROM projects WHERE project_client_id = $1;`,
-        [project_client_id]
-      );
-      return result?.rows;
-    } catch (error: any) {
-      throw new BadRequestError(error.message);
-    }
-  }
-
-  static async findByIndustryId(industry_id: string) {
-    try {
-      const result = await pool.query(
-        `SELECT id, project_code FROM projects WHERE industry_id = $1;`,
-        [industry_id]
-      );
-      return result?.rows;
-    } catch (error: any) {
-      throw new BadRequestError(error.message);
-    }
-  }
-
-  static async findMaxNumberForGivenCode(clientCode: string) {
-    try {
-      const result = await pool.query(
-        `SELECT MAX(project_code) FROM projects WHERE project_code LIKE $1;`,
-        [`${clientCode}%`]
+        `SELECT MAX(serial) FROM offers WHERE year_month_kam = $1;`,
+        [year_month_kam]
       );
 
-      console.log({ count: result?.rows[0] });
+      console.log({ offer_max_count: result?.rows[0] });
       const max = result?.rows[0].max;
-      return max ? parseInt(max.substring(max.length - 3)) : 0;
+      return max ? parseInt(max) : 0;
     } catch (error: any) {
       throw new BadRequestError(error.message);
     }
   }
 
   static async insert({
-    project_code,
+    number,
+    serial,
+    year_month_kam,
     project_client_id,
-    industry_id,
     rfq_id,
     department,
-    pm_id,
-    clickup_id,
-    version,
-    revision,
-    note,
+    ranges_margins,
+    for_buffer,
+    pick_from_buffer,
+    footer_pl,
+    footer_en,
+    buffer_pl,
+    buffer_en,
+    contents,
   }: {
-    project_code: string;
+    number: string;
+    serial: string;
+    year_month_kam: string;
     project_client_id: string;
-    industry_id: string;
     rfq_id: string;
     department: string;
-    pm_id: string;
-    clickup_id: string;
-    version: string;
-    revision: string;
-    note: string;
+    ranges_margins: string;
+    for_buffer: string;
+    pick_from_buffer: string;
+    footer_pl: string;
+    footer_en: string;
+    buffer_pl: string;
+    buffer_en: string;
+    contents: string;
   }) {
     try {
       const result = await pool.query(
