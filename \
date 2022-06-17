@@ -6,13 +6,13 @@ class OfferRepo {
     try {
       const result = await pool.query(`
       SELECT
-        o.id AS id,
+        o.id,
         number,
         department,
         project_clients.name AS client,
         kam.shortname AS kam,
         kam.id AS kam_id,
-        to_char(o.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
+        to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM offers AS o
         JOIN project_clients ON project_clients.id = o.project_client_id
         JOIN users AS kam ON kam.id = project_clients.kam_id
@@ -29,13 +29,13 @@ class OfferRepo {
       const result = await pool.query(
         `
       SELECT
-        o.id AS id,
+        o.id,
         number,
         department,
         project_clients.name AS client,
         kam.shortname AS kam,
         kam.id AS kam_id,
-        to_char(o.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
+        to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM offers AS o
         JOIN project_clients ON project_clients.id = o.project_client_id
         JOIN users AS kam ON kam.id = project_clients.kam_id
@@ -55,7 +55,7 @@ class OfferRepo {
       const result = await pool.query(
         `
         SELECT
-          o.id AS id,
+          o.id,
           number,
           o.department AS department,
           project_clients.name AS client,
@@ -73,10 +73,12 @@ class OfferRepo {
           buffer_pl,
           buffer_en,
           contents,
-          to_char(o.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
+          to_char(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
           FROM offers AS o
           JOIN project_clients ON project_clients.id = o.project_client_id
+          JOIN industries ON industries.id = o.industry_id
           JOIN rfqs ON rfqs.id = o.rfq_id
+          JOIN users AS pm ON pm.id = o.pm_id
           JOIN users AS kam ON kam.id = project_clients.kam_id
         WHERE o.id = $1
         `,
@@ -132,7 +134,7 @@ class OfferRepo {
     contents,
   }: {
     number: string;
-    serial: number;
+    serial: string;
     year_month_kam: string;
     project_client_id: string;
     rfq_id: string;
@@ -164,10 +166,10 @@ class OfferRepo {
           buffer_en,
           contents)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-          RETURNING id, number;`,
+          RETURNING id, project_code;`,
         [
           number,
-          serial + "",
+          serial,
           year_month_kam,
           project_client_id,
           rfq_id,
@@ -222,7 +224,7 @@ class OfferRepo {
           contents, = $9
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
-          RETURNING id, number;`,
+          RETURNING id, project_code;`,
         [
           id,
           ranges_margins,
