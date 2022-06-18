@@ -8,14 +8,16 @@ class OfferRepo {
       SELECT
         o.id AS id,
         number,
-        department,
+        o.department AS department,
         project_clients.name AS client,
         kam.shortname AS kam,
         kam.id AS kam_id,
+        r.rfq_code AS rfq,
         to_char(o.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM offers AS o
         JOIN project_clients ON project_clients.id = o.project_client_id
         JOIN users AS kam ON kam.id = project_clients.kam_id
+        JOIN rfqs AS r ON r.id = o.rfq_id
         ORDER BY number DESC;
       `);
       return result?.rows;
@@ -31,14 +33,16 @@ class OfferRepo {
       SELECT
         o.id AS id,
         number,
-        department,
+        o.department AS department,
         project_clients.name AS client,
         kam.shortname AS kam,
         kam.id AS kam_id,
+        r.rfq_code AS rfq,
         to_char(o.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM offers AS o
         JOIN project_clients ON project_clients.id = o.project_client_id
         JOIN users AS kam ON kam.id = project_clients.kam_id
+        JOIN rfqs AS r ON r.id = o.rfq_id
         WHERE kam.id = $1
         ORDER BY number DESC;
       `,
@@ -213,13 +217,13 @@ class OfferRepo {
       const result = await pool.query(
         `UPDATE offers SET
           ranges_margins = $2,
-          for_buffer, = $3
+          for_buffer = $3,
           pick_from_buffer = $4,
-          footer_pl, = $5
-          footer_en, = $6
-          buffer_pl, = $7
-          buffer_en, = $8
-          contents, = $9
+          footer_pl = $5,
+          footer_en = $6,
+          buffer_pl = $7,
+          buffer_en = $8,
+          contents = $9,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, number;`,

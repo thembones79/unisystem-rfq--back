@@ -40,14 +40,11 @@ router.post(
       contents,
     } = req.body;
 
-    console.log("BODY", req.body);
-
     const rfq = await RfqRepo.findById(rfq_id);
     const clientIdFromRfq = rfq.project_client_id;
     const clientIdToSet = rfq_id === "1" ? project_client_id : clientIdFromRfq;
 
     const client = await ProjectClientRepo.findById(clientIdToSet);
-    console.log({ client });
     if (!client) {
       throw new BadRequestError("Client does not exist");
     }

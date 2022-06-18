@@ -10,12 +10,11 @@ class ConfigRepo {
         name,
         user_id,
         category,
-        template,
         users.shortname AS kam,
         to_char(configs.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM configs
         JOIN users ON users.id = configs.user_id
-        ORDER BY updated DESC;
+        ORDER BY name DESC;
       `);
       return result?.rows;
     } catch (error: any) {
@@ -32,13 +31,12 @@ class ConfigRepo {
         name,
         user_id,
         category,
-        template,
         users.shortname AS kam,
         to_char(configs.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM configs
         JOIN users ON users.id = configs.user_id
         WHERE user_id = $1
-        ORDER BY updated DESC;
+        ORDER BY name DESC;
       `,
         [kamId]
       );
@@ -62,7 +60,7 @@ class ConfigRepo {
         to_char(configs.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM configs
         JOIN users ON users.id = configs.user_id
-        WHERE id = $1
+        WHERE configs.id = $1
         `,
         [id]
       );
@@ -113,7 +111,7 @@ class ConfigRepo {
       const result = await pool.query(
         `UPDATE configs SET
           name = $2,
-          template, = $3
+          template = $3,
           updated_at = CURRENT_TIMESTAMP
           WHERE id = $1
           RETURNING id, name;`,
