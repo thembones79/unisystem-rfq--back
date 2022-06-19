@@ -10,7 +10,6 @@ const router = express.Router();
 router.put(
   "/offers/:id",
   requireAuth,
-  [body("ranges_margins").trim()],
   validateRequest,
   async (req: Request, res: Response) => {
     const {

@@ -10,6 +10,7 @@ class ConfigRepo {
         name,
         user_id,
         category,
+        template,
         users.shortname AS kam,
         to_char(configs.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM configs
@@ -31,6 +32,7 @@ class ConfigRepo {
         name,
         user_id,
         category,
+        template,
         users.shortname AS kam,
         to_char(configs.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM configs
