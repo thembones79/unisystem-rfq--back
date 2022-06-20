@@ -95,20 +95,23 @@ class ProjectClientRepo {
     name,
     code,
     kam_id,
+    client_list_clickup_id,
   }: {
     name: string;
     code: string;
     kam_id: string;
+    client_list_clickup_id: string;
   }) {
     try {
       const result = await pool.query(
         `INSERT INTO project_clients (
           name,
           code,
-          kam_id)
-          VALUES ($1, $2, $3)
+          kam_id,
+          client_list_clickup_id)
+          VALUES ($1, $2, $3, $4)
           RETURNING id, name, code;`,
-        [name, code, kam_id]
+        [name, code, kam_id, client_list_clickup_id]
       );
       return result?.rows[0];
     } catch (error: any) {

@@ -68,7 +68,7 @@ class UserRepo {
   static async findById(id: string) {
     try {
       const result = await pool.query(
-        `SELECT id, username, email, shortname, shortname_alt, role_id FROM users WHERE id = $1;`,
+        `SELECT id, username, email, shortname, shortname_alt, role_id, kam_folder_clickup_id FROM users WHERE id = $1;`,
         [id]
       );
       return result?.rows[0];
