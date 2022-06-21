@@ -10,7 +10,13 @@ const router = express.Router();
 router.put(
   "/configs/:id",
   requireAuth,
-  [body("name").trim()],
+  [
+    body("name")
+      .trim()
+      .notEmpty()
+      .escape()
+      .withMessage("You must supply a template name"),
+  ],
   validateRequest,
   async (req: Request, res: Response) => {
     const { name, template } = req.body;
