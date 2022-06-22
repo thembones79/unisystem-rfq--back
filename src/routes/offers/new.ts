@@ -53,7 +53,7 @@ router.post(
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
     const kam = client.kam;
-    const yearMonthKam = `${year}/${month}/${kam}`;
+    const yearMonthKam = `${year}/${concatZeros(month + "", 2)}/${kam}`;
     const serial =
       (await OfferRepo.findMaxSerialForYearMonthKam(yearMonthKam)) + 1;
 
