@@ -15,7 +15,7 @@ class ConfigRepo {
         to_char(configs.updated_at, 'YYYY-MM-DD HH24:MI:SS') as updated
         FROM configs
         JOIN users ON users.id = configs.user_id
-        ORDER BY name DESC;
+        ORDER BY name;
       `);
       return result?.rows;
     } catch (error: any) {
@@ -38,7 +38,7 @@ class ConfigRepo {
         FROM configs
         JOIN users ON users.id = configs.user_id
         WHERE user_id = $1
-        ORDER BY name DESC;
+        ORDER BY name;
       `,
         [kamId]
       );
