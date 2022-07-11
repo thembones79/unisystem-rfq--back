@@ -164,9 +164,9 @@ router.post(
 
     const description = `
 
-${sp}
+${encodeURI(sp)}
 
-${appPath}
+${encodeURI(appPath)}
 
     `;
 
